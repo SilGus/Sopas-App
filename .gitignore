@@ -24,3 +24,5 @@ pnpm-debug.log*
 
 # Editor
 .vscode/
+# Fuentes privadas del infoproducto
+docs/fuentes/

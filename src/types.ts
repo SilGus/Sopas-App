@@ -21,11 +21,14 @@ export interface Sopa {
 
 export interface CaldoBase {
   id: number;
-  codigo: string;
+  numero: string;
   nombre: string;
-  descripcion: string;
+  subtitulo?: string;
+  porciones: string;
   ingredientes: Ingrediente[];
   preparacion: string[];
+  usoIdeal: string;
+  valorNutricional: string;
 }
 
 export interface AgregadoFamiliar {

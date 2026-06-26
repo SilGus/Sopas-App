@@ -187,8 +187,13 @@ export function CaldoBaseScreen({ sopaId, onConfirm, onBack }: { sopaId: number;
                 <span className="material-symbols-outlined text-on-secondary-container icon-fill">soup_kitchen</span>
               </div>
               <div className="flex-1">
-                <h4 className="font-headline-md text-headline-md text-on-surface">#{caldoSugerido.codigo} {caldoSugerido.nombre}</h4>
-                <p className="font-body-md text-body-md text-on-surface-variant">{caldoSugerido.descripcion}</p>
+                <h4 className="font-headline-md text-headline-md text-on-surface">#{caldoSugerido.numero} {caldoSugerido.nombre}</h4>
+                {caldoSugerido.subtitulo && (
+                  <p className="font-label-md text-label-md text-secondary">{caldoSugerido.subtitulo}</p>
+                )}
+                <p className="font-body-md text-body-md text-on-surface-variant">{caldoSugerido.porciones}</p>
+                <p className="font-body-md text-body-md text-on-surface-variant mt-2">{caldoSugerido.usoIdeal}</p>
+                <p className="font-body-md text-body-md text-on-surface-variant mt-1">{caldoSugerido.valorNutricional}</p>
               </div>
               {selected === caldoSugerido.id && (
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary-container text-white">
@@ -206,8 +211,13 @@ export function CaldoBaseScreen({ sopaId, onConfirm, onBack }: { sopaId: number;
               <div key={c.id} onClick={() => setSelected(c.id)} className={`bg-[#f0ede4] rounded-xl p-5 border-2 transition-all cursor-pointer ${selected === c.id ? 'border-primary-container' : 'border-transparent'}`}>
                 <div className="flex flex-col gap-3">
                   <div className="flex flex-col gap-1">
-                    <h4 className="font-headline-md text-headline-md text-on-surface">#{c.codigo} {c.nombre}</h4>
-                    <p className="font-body-md text-body-md text-on-surface-variant">{c.descripcion}</p>
+                    <h4 className="font-headline-md text-headline-md text-on-surface">#{c.numero} {c.nombre}</h4>
+                    {c.subtitulo && (
+                      <p className="font-label-md text-label-md text-secondary">{c.subtitulo}</p>
+                    )}
+                    <p className="font-body-md text-body-md text-on-surface-variant">{c.porciones}</p>
+                    <p className="font-body-md text-body-md text-on-surface-variant mt-2">{c.usoIdeal}</p>
+                    <p className="font-body-md text-body-md text-on-surface-variant mt-1">{c.valorNutricional}</p>
                   </div>
                   <div className="flex items-center justify-start shrink-0">
                     <button className={selected === c.id ? 'bg-primary-container text-white px-4 py-2 rounded-xl font-label-md text-label-md active:scale-95 transition-all w-full sm:w-auto' : 'bg-white border-2 border-outline px-4 py-2 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container active:scale-95 transition-all w-full sm:w-auto'}>
@@ -513,7 +523,12 @@ export function ModoCocina({ cart, onBack, onFinishClear, onBottomNav, onGoCatal
               <div className="space-y-6">
                 {uniqueCaldosBase.map(caldo => (
                   <div key={caldo.id} className="space-y-4">
-                    <h4 className="font-headline-md text-primary px-2">#{caldo.codigo} {caldo.nombre}</h4>
+                    <div className="px-2">
+                      <h4 className="font-headline-md text-primary">#{caldo.numero} {caldo.nombre}</h4>
+                      {caldo.subtitulo && (
+                        <p className="font-label-md text-label-md text-secondary">{caldo.subtitulo}</p>
+                      )}
+                    </div>
                     {caldo.preparacion.map((step, idx) => (
                       <div key={idx} className="p-6 rounded-xl border border-outline-variant shadow-sm bg-[#f0ede4]">
                         <p className="font-body-lg text-body-lg text-on-background">{step}</p>
