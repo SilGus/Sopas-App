@@ -13,9 +13,9 @@ export default defineConfig(() => {
         registerType: 'autoUpdate',
         manifest: {
           id: '/',
-          name: 'Ensaladas en Frasco',
-          short_name: 'Ensaladas',
-          description: 'App para organizar ensaladas en frasco, lista de compras y preparación semanal.',
+          name: 'Sopas App',
+          short_name: 'Sopas',
+          description: 'App de planificación de Sopas que Deshinchan',
           lang: 'es-AR',
           theme_color: '#006A3B',
           background_color: '#FFFDF6',

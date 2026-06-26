@@ -1,6 +1,6 @@
 {
-  "name": "",
-  "description": "",
+  "name": "Sopas App",
+  "description": "App de planificación de Sopas que Deshinchan",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

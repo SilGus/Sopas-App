@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Inicio, Catalogo, Aderezo, Porciones, Bucle, ListaCompras, ModoCocina, Historial } from './screens';
+import { Inicio, Catalogo, CaldoBaseScreen, Porciones, Bucle, ListaCompras, ModoCocina, Historial } from './screens';
 import { CartItem, SavedList } from './types';
 
-type ScreenState = 'inicio' | 'catalogo' | 'aderezo' | 'porciones' | 'bucle' | 'lista' | 'cocina' | 'historial';
+type ScreenState = 'inicio' | 'catalogo' | 'caldoBase' | 'porciones' | 'bucle' | 'lista' | 'cocina' | 'historial';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<ScreenState>('inicio');
@@ -15,7 +15,7 @@ export default function App() {
   }, [currentScreen]); // Se ejecuta cada vez que cambia la pantalla
 
   useEffect(() => {
-    const saved = localStorage.getItem('salad-lists');
+    const saved = localStorage.getItem('soup-lists');
     if (saved) {
       setSavedLists(JSON.parse(saved));
     }
@@ -43,13 +43,13 @@ export default function App() {
     setCurrentScreen('catalogo');
   };
 
-  const handleSelectSalad = (id: number) => {
-    setSelection({ ensaladaId: id });
-    setCurrentScreen('aderezo');
+  const handleSelectSoup = (id: number) => {
+    setSelection({ sopaId: id, agregadoIds: [] });
+    setCurrentScreen('caldoBase');
   };
 
-  const handleSelectAderezo = (id: number) => {
-    setSelection(prev => ({ ...prev, aderezoId: id }));
+  const handleSelectCaldoBase = (caldoBaseId: number, agregadoIds: number[]) => {
+    setSelection(prev => ({ ...prev, caldoBaseId, agregadoIds }));
     setCurrentScreen('porciones');
   };
 
@@ -58,8 +58,9 @@ export default function App() {
       ...prev,
       {
         id: crypto.randomUUID(),
-        ensaladaId: selection.ensaladaId!,
-        aderezoId: selection.aderezoId!,
+        sopaId: selection.sopaId!,
+        caldoBaseId: selection.caldoBaseId!,
+        agregadoIds: selection.agregadoIds ?? [],
         cantidad: qty
       }
     ]);
@@ -74,7 +75,7 @@ export default function App() {
     };
     const updatedLists = [newList, ...savedLists];
     setSavedLists(updatedLists);
-    localStorage.setItem('salad-lists', JSON.stringify(updatedLists));
+    localStorage.setItem('soup-lists', JSON.stringify(updatedLists));
     setCurrentScreen('lista');
   };
 
@@ -100,31 +101,31 @@ export default function App() {
   const handleDeleteList = (id: string) => {
     const updatedLists = savedLists.filter(list => list.id !== id);
     setSavedLists(updatedLists);
-    localStorage.setItem('salad-lists', JSON.stringify(updatedLists));
+    localStorage.setItem('soup-lists', JSON.stringify(updatedLists));
   };
 
   const handleClearHistory = () => {
     setSavedLists([]);
-    localStorage.removeItem('salad-lists');
+    localStorage.removeItem('soup-lists');
   };
 
   return (
     <>
       {currentScreen === 'inicio' && <Inicio onNewList={startNew} onHistory={() => setCurrentScreen('historial')} onBottomNav={handleBottomNav} />}
-      {currentScreen === 'catalogo' && <Catalogo onSelect={handleSelectSalad} onBottomNav={handleBottomNav} />}
-      {currentScreen === 'aderezo' && (
-        <Aderezo 
-          ensaladaId={selection.ensaladaId!} 
-          onConfirm={handleSelectAderezo} 
+      {currentScreen === 'catalogo' && <Catalogo onSelect={handleSelectSoup} onBottomNav={handleBottomNav} />}
+      {currentScreen === 'caldoBase' && (
+        <CaldoBaseScreen
+          sopaId={selection.sopaId!} 
+          onConfirm={handleSelectCaldoBase} 
           onBack={() => setCurrentScreen('catalogo')} 
         />
       )}
       {currentScreen === 'porciones' && (
         <Porciones 
-          ensaladaId={selection.ensaladaId!} 
-          aderezoId={selection.aderezoId!} 
+          sopaId={selection.sopaId!} 
+          caldoBaseId={selection.caldoBaseId!} 
           onConfirm={handleAddPortions} 
-          onBack={() => setCurrentScreen('aderezo')} 
+          onBack={() => setCurrentScreen('caldoBase')} 
         />
       )}
       {currentScreen === 'bucle' && (

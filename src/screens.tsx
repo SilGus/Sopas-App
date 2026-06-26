@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ENSALADAS, ADEREZOS } from './data';
+import { AGREGADOS_FAMILIARES, CALDOS_BASE, CATEGORIAS_SOPAS, SOPAS } from './data';
 import { CartItem, SavedList } from './types';
 import { getGroupedIngredients, generateWhatsAppMessage, formatearMedida } from './utils';
 
@@ -7,7 +7,7 @@ import { getGroupedIngredients, generateWhatsAppMessage, formatearMedida } from 
 
 function BottomNav({ active, onNavigate }: { active: string; onNavigate: (s: string) => void }) {
   const items = [
-    { id: 'catalogo', icon: 'restaurant_menu', label: 'Recetas' },
+    { id: 'catalogo', icon: 'soup_kitchen', label: 'Recetas' },
     { id: 'lista', icon: 'shopping_basket', label: 'Mi Lista' },
     { id: 'cocina', icon: 'auto_stories', label: 'Preparación' },
   ];
@@ -42,15 +42,13 @@ export function Inicio({ onNewList, onHistory, onBottomNav }: { onNewList: () =>
   return (
     <div className="bg-background text-on-background min-h-screen flex flex-col font-body-md antialiased pb-32">
       <header className="flex items-center px-margin-mobile h-[72px] w-full max-w-screen-xl mx-auto justify-center z-40">
-        <h1 className="font-display-lg text-display-lg font-bold text-primary">Ensaladas en Frasco</h1>
+        <h1 className="font-display-lg text-display-lg font-bold text-primary">Sopas que Deshinchan</h1>
       </header>
       <main className="flex-grow flex flex-col items-center justify-center px-margin-mobile max-w-screen-md mx-auto w-full gap-stack-lg">
         <div className="flex justify-center my-6">
-          <img
-            src="/assets/tapa.jpg"
-            alt="Ensaladas en frasco"
-            className="w-full max-w-[300px] h-auto rounded-2xl shadow-lg"
-          />
+          <div className="w-full max-w-[300px] aspect-square rounded-2xl shadow-lg bg-surface-container flex items-center justify-center border border-outline-variant">
+            <span className="material-symbols-outlined icon-fill text-primary text-[132px]">soup_kitchen</span>
+          </div>
         </div>
         <div className="w-full flex flex-col gap-stack-md mt-stack-md">
           <button onClick={onNewList} className="w-full h-auto min-h-[52px] py-3 px-4 bg-primary text-on-primary font-label-lg text-label-lg rounded-full shadow-md flex items-center justify-center gap-3 hover:opacity-90 transition-opacity active:scale-[0.98] text-center">
@@ -73,11 +71,11 @@ export function Catalogo({ onSelect, onBottomNav }: { onSelect: (id: number) => 
   const [searchNumber, setSearchNumber] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todas');
 
-  const categorias = ['Todas', 'Ligeras y Detox', 'Proteicas', 'Vegetarianas', 'Energéticas', 'Gourmet'];
+  const categorias = ['Todas', ...CATEGORIAS_SOPAS];
 
-  const filteredEnsaladas = ENSALADAS.filter(e => {
-    const matchNumber = searchNumber.trim() === '' || e.id.toString() === searchNumber.trim();
-    const matchCategory = selectedCategory === 'Todas' || e.categoria_ensalada === selectedCategory;
+  const filteredSopas = SOPAS.filter(s => {
+    const matchNumber = searchNumber.trim() === '' || s.id.toString() === searchNumber.trim();
+    const matchCategory = selectedCategory === 'Todas' || s.categoria_sopa === selectedCategory;
     return matchNumber && matchCategory;
   });
 
@@ -85,7 +83,7 @@ export function Catalogo({ onSelect, onBottomNav }: { onSelect: (id: number) => 
     <div className="min-h-screen pb-32 bg-background flex flex-col">
       <header className="bg-surface-bright shadow-sm flex justify-between items-center w-full px-gutter-mobile h-16 sticky top-0 z-50">
         <div className="flex items-center gap-4">
-          <span className="material-symbols-outlined text-primary">restaurant_menu</span>
+          <span className="material-symbols-outlined text-primary">soup_kitchen</span>
           <h1 className="font-display-lg-mobile text-display-lg-mobile text-primary">Catálogo</h1>
         </div>
       </header>
@@ -95,7 +93,7 @@ export function Catalogo({ onSelect, onBottomNav }: { onSelect: (id: number) => 
             <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
             <input
               type="number"
-              placeholder="Ingresa el número de ensalada (1-100)"
+              placeholder="Ingresa el número de sopa (1-60)"
               value={searchNumber}
               onChange={e => setSearchNumber(e.target.value)}
               className="w-full h-14 pl-12 pr-4 bg-surface rounded-xl border border-outline focus:border-primary focus:ring-2 focus:ring-primary-container outline-none font-body-lg text-on-surface placeholder:text-on-surface-variant/70 transition-all font-bold placeholder:font-normal"
@@ -118,20 +116,20 @@ export function Catalogo({ onSelect, onBottomNav }: { onSelect: (id: number) => 
           </div>
         </div>
 
-        <h2 className="font-headline-lg text-headline-lg text-on-surface">Elige tu ensalada</h2>
+        <h2 className="font-headline-lg text-headline-lg text-on-surface">Elige tu sopa</h2>
 
-        {filteredEnsaladas.length > 0 ? (
+        {filteredSopas.length > 0 ? (
           <div className="grid grid-cols-1 gap-4">
-            {filteredEnsaladas.map(e => (
-              <div key={e.id} onClick={() => onSelect(e.id)} className="bg-[#f0ede4] rounded-xl p-4 flex items-center gap-4 border border-outline-variant custom-shadow cursor-pointer hover:border-primary transition-all group">
+            {filteredSopas.map(s => (
+              <div key={s.id} onClick={() => onSelect(s.id)} className="bg-[#f0ede4] rounded-xl p-4 flex items-center gap-4 border border-outline-variant custom-shadow cursor-pointer hover:border-primary transition-all group">
                 <div className="w-14 h-14 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-display-sm font-bold shrink-0 shadow-sm border-2 border-white group-hover:scale-105 transition-transform">
-                  #{e.id}
+                  #{s.id}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <span className="text-secondary font-label-sm text-label-sm uppercase tracking-wider">{e.categoria_ensalada}</span>
-                  <h3 className="font-headline-md text-headline-md text-on-surface leading-tight mt-0.5 mb-1">{e.nombre}</h3>
+                  <span className="text-secondary font-label-sm text-label-sm uppercase tracking-wider">{s.categoria_sopa}</span>
+                  <h3 className="font-headline-md text-headline-md text-on-surface leading-tight mt-0.5 mb-1">{s.nombre}</h3>
                   <p className="font-body-md text-body-md text-on-surface-variant">
-                    {e.ingredientes.map(i => i.nombre).join(', ')}
+                    {s.ingredientes.map(i => i.nombre).join(', ')}
                   </p>
                 </div>
                 <span className="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform">chevron_right</span>
@@ -141,7 +139,7 @@ export function Catalogo({ onSelect, onBottomNav }: { onSelect: (id: number) => 
         ) : (
           <div className="py-12 flex flex-col items-center justify-center text-center opacity-70">
             <span className="material-symbols-outlined text-6xl mb-4 text-on-surface-variant">search_off</span>
-            <p className="font-body-lg text-on-surface-variant">No se encontraron ensaladas con esos filtros.</p>
+            <p className="font-body-lg text-on-surface-variant">No se encontraron sopas con esos filtros.</p>
           </div>
         )}
       </main>
@@ -150,20 +148,24 @@ export function Catalogo({ onSelect, onBottomNav }: { onSelect: (id: number) => 
   );
 }
 
-// Pantalla 2: Aderezo
-export function Aderezo({ ensaladaId, onConfirm, onBack }: { ensaladaId: number; onConfirm: (aderezoId: number) => void; onBack: () => void }) {
-  const ensalada = ENSALADAS.find(e => e.id === ensaladaId)!;
-  const [selected, setSelected] = useState(ensalada.aderezo_sugerido_id);
+// Pantalla 2: Caldo Base
+export function CaldoBaseScreen({ sopaId, onConfirm, onBack }: { sopaId: number; onConfirm: (caldoBaseId: number, agregadoIds: number[]) => void; onBack: () => void }) {
+  const sopa = SOPAS.find(s => s.id === sopaId)!;
+  const [selected, setSelected] = useState(sopa.caldo_base_sugerido_id);
+  const [selectedAgregados, setSelectedAgregados] = useState<number[]>([]);
 
-  const aderezoSugerido = ADEREZOS.find(a => a.id === ensalada.aderezo_sugerido_id)!;
-  const otrosAderezos = ADEREZOS.filter(a => a.id !== ensalada.aderezo_sugerido_id);
+  const caldoSugerido = CALDOS_BASE.find(c => c.id === sopa.caldo_base_sugerido_id)!;
+  const otrosCaldos = CALDOS_BASE.filter(c => c.id !== sopa.caldo_base_sugerido_id);
+  const toggleAgregado = (id: number) => {
+    setSelectedAgregados(prev => prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]);
+  };
 
   return (
     <div className="min-h-screen pb-32 bg-background">
       <header className="bg-surface-bright shadow-sm flex justify-between items-center w-full px-gutter-mobile h-16 sticky top-0 z-50">
         <div className="flex items-center gap-4">
           <button onClick={onBack} className="material-symbols-outlined text-primary active:scale-95 duration-150">arrow_back</button>
-          <h1 className="font-display-lg-mobile text-display-lg-mobile text-primary">Salad Jar</h1>
+          <h1 className="font-display-lg-mobile text-display-lg-mobile text-primary">Caldo Base</h1>
         </div>
         <span className="material-symbols-outlined text-primary">account_circle</span>
       </header>
@@ -171,24 +173,24 @@ export function Aderezo({ ensaladaId, onConfirm, onBack }: { ensaladaId: number;
         <section>
           <div className="bg-[#f0ede4] rounded-xl p-6 flex items-center justify-between border border-outline-variant custom-shadow">
             <div className="flex flex-col">
-              <span className="text-on-surface-variant font-label-md text-label-md">Salad seleccionada</span>
-              <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">{ensalada.nombre}</h2>
+              <span className="text-on-surface-variant font-label-md text-label-md">Sopa seleccionada</span>
+              <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">{sopa.nombre}</h2>
             </div>
           </div>
         </section>
 
         <section className="space-y-stack-sm">
-          <h3 className="font-headline-md text-headline-md text-on-surface px-1">Aderezo Sugerido</h3>
-          <div onClick={() => setSelected(aderezoSugerido.id)} className={`bg-[#f0ede4] rounded-xl p-1 border-4 transition-all cursor-pointer ${selected === aderezoSugerido.id ? 'border-primary-container' : 'border-transparent'}`}>
+          <h3 className="font-headline-md text-headline-md text-on-surface px-1">Caldo Base recomendado</h3>
+          <div onClick={() => setSelected(caldoSugerido.id)} className={`bg-[#f0ede4] rounded-xl p-1 border-4 transition-all cursor-pointer ${selected === caldoSugerido.id ? 'border-primary-container' : 'border-transparent'}`}>
             <div className="bg-white rounded-lg p-5 flex items-center gap-4">
               <div className="bg-secondary-container p-3 rounded-full">
-                <span className="material-symbols-outlined text-on-secondary-container icon-fill">opacity</span>
+                <span className="material-symbols-outlined text-on-secondary-container icon-fill">soup_kitchen</span>
               </div>
               <div className="flex-1">
-                <h4 className="font-headline-md text-headline-md text-on-surface">{aderezoSugerido.nombre}</h4>
-                <p className="font-body-md text-body-md text-on-surface-variant">{aderezoSugerido.descripcion}</p>
+                <h4 className="font-headline-md text-headline-md text-on-surface">#{caldoSugerido.codigo} {caldoSugerido.nombre}</h4>
+                <p className="font-body-md text-body-md text-on-surface-variant">{caldoSugerido.descripcion}</p>
               </div>
-              {selected === aderezoSugerido.id && (
+              {selected === caldoSugerido.id && (
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary-container text-white">
                   <span className="material-symbols-outlined text-[20px]">check</span>
                 </div>
@@ -198,18 +200,18 @@ export function Aderezo({ ensaladaId, onConfirm, onBack }: { ensaladaId: number;
         </section>
 
         <section className="space-y-stack-sm">
-          <h3 className="font-headline-md text-headline-md text-on-surface px-1">Otros Aderezos</h3>
+          <h3 className="font-headline-md text-headline-md text-on-surface px-1">Otros Caldos Base</h3>
           <div className="space-y-stack-sm">
-            {otrosAderezos.map(a => (
-              <div key={a.id} onClick={() => setSelected(a.id)} className={`bg-[#f0ede4] rounded-xl p-5 border-2 transition-all cursor-pointer ${selected === a.id ? 'border-primary-container' : 'border-transparent'}`}>
+            {otrosCaldos.map(c => (
+              <div key={c.id} onClick={() => setSelected(c.id)} className={`bg-[#f0ede4] rounded-xl p-5 border-2 transition-all cursor-pointer ${selected === c.id ? 'border-primary-container' : 'border-transparent'}`}>
                 <div className="flex flex-col gap-3">
                   <div className="flex flex-col gap-1">
-                    <h4 className="font-headline-md text-headline-md text-on-surface">{a.nombre}</h4>
-                    <p className="font-body-md text-body-md text-on-surface-variant">{a.descripcion}</p>
+                    <h4 className="font-headline-md text-headline-md text-on-surface">#{c.codigo} {c.nombre}</h4>
+                    <p className="font-body-md text-body-md text-on-surface-variant">{c.descripcion}</p>
                   </div>
                   <div className="flex items-center justify-start shrink-0">
-                    <button className={selected === a.id ? 'bg-primary-container text-white px-4 py-2 rounded-xl font-label-md text-label-md active:scale-95 transition-all w-full sm:w-auto' : 'bg-white border-2 border-outline px-4 py-2 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container active:scale-95 transition-all w-full sm:w-auto'}>
-                      {selected === a.id ? 'Seleccionado' : 'Seleccionar'}
+                    <button className={selected === c.id ? 'bg-primary-container text-white px-4 py-2 rounded-xl font-label-md text-label-md active:scale-95 transition-all w-full sm:w-auto' : 'bg-white border-2 border-outline px-4 py-2 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container active:scale-95 transition-all w-full sm:w-auto'}>
+                      {selected === c.id ? 'Seleccionado' : 'Seleccionar'}
                     </button>
                   </div>
                 </div>
@@ -217,11 +219,37 @@ export function Aderezo({ ensaladaId, onConfirm, onBack }: { ensaladaId: number;
             ))}
           </div>
         </section>
+
+        <section className="space-y-stack-sm">
+          <h3 className="font-headline-md text-headline-md text-on-surface px-1">Agregados familiares opcionales</h3>
+          <div className="space-y-stack-sm">
+            {AGREGADOS_FAMILIARES.map(agregado => {
+              const isSelected = selectedAgregados.includes(agregado.id);
+              return (
+                <label key={agregado.id} className={`bg-[#f0ede4] rounded-xl p-5 border-2 transition-all cursor-pointer flex items-start gap-4 ${isSelected ? 'border-primary-container' : 'border-transparent'}`}>
+                  <input
+                    type="checkbox"
+                    className="sr-only"
+                    checked={isSelected}
+                    onChange={() => toggleAgregado(agregado.id)}
+                  />
+                  <span className={`material-symbols-outlined mt-1 ${isSelected ? 'text-primary icon-fill' : 'text-on-surface-variant'}`}>
+                    {isSelected ? 'check_circle' : 'add_circle'}
+                  </span>
+                  <span className="flex-1">
+                    <span className="block font-headline-md text-headline-md text-on-surface">{agregado.nombre}</span>
+                    <span className="block font-body-md text-body-md text-on-surface-variant">{agregado.descripcion}</span>
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        </section>
       </main>
 
       <div className="fixed bottom-0 left-0 w-full bg-white/80 backdrop-blur-md p-gutter-mobile border-t border-outline-variant flex justify-center items-center h-28 z-40">
-        <button onClick={() => onConfirm(selected)} className="bg-primary hover:bg-primary-container text-white w-full max-w-lg min-h-[64px] py-4 px-6 rounded-full font-headline-lg text-headline-lg flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all text-center">
-          Confirmar Aderezo
+        <button onClick={() => onConfirm(selected, selectedAgregados)} className="bg-primary hover:bg-primary-container text-white w-full max-w-lg min-h-[64px] py-4 px-6 rounded-full font-headline-lg text-headline-lg flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all text-center">
+          Confirmar Caldo Base
           <span className="material-symbols-outlined">arrow_forward</span>
         </button>
       </div>
@@ -230,9 +258,10 @@ export function Aderezo({ ensaladaId, onConfirm, onBack }: { ensaladaId: number;
 }
 
 // Pantalla 3: Porciones
-export function Porciones({ ensaladaId, aderezoId, onConfirm, onBack }: { ensaladaId: number; aderezoId: number; onConfirm: (qty: number) => void; onBack: () => void }) {
+export function Porciones({ sopaId, caldoBaseId, onConfirm, onBack }: { sopaId: number; caldoBaseId: number; onConfirm: (qty: number) => void; onBack: () => void }) {
   const [qty, setQty] = useState(1);
-  const ensalada = ENSALADAS.find(e => e.id === ensaladaId)!;
+  const sopa = SOPAS.find(s => s.id === sopaId)!;
+  const caldoBase = CALDOS_BASE.find(c => c.id === caldoBaseId)!;
 
   return (
     <div className="min-h-screen flex flex-col bg-background pb-32">
@@ -242,8 +271,9 @@ export function Porciones({ ensaladaId, aderezoId, onConfirm, onBack }: { ensala
       </header>
 
       <main className="flex-grow flex flex-col items-center justify-center px-margin-mobile max-w-md mx-auto w-full text-center">
-        <h2 className="font-display-lg-mobile text-display-lg-mobile text-on-background mb-2">{ensalada.nombre}</h2>
-        <p className="font-body-lg text-body-lg text-on-surface-variant mb-12">¿Cuántos frascos quieres preparar para tu semana?</p>
+        <h2 className="font-display-lg-mobile text-display-lg-mobile text-on-background mb-2">{sopa.nombre}</h2>
+        <p className="font-body-md text-body-md text-on-surface-variant mb-2">Caldo base: {caldoBase.nombre}</p>
+        <p className="font-body-lg text-body-lg text-on-surface-variant mb-12">¿Cuántas porciones quieres preparar?</p>
 
         <div className="flex items-center justify-center gap-8 bg-[#f0ede4] rounded-full p-2 border border-outline-variant shadow-sm w-full">
           <button onClick={() => setQty(Math.max(1, qty - 1))} className="w-16 h-16 rounded-full bg-white flex items-center justify-center text-primary shadow hover:bg-surface-container active:scale-95 transition-all">
@@ -293,7 +323,7 @@ export function Bucle({ onAddMore, onFinish }: { onAddMore: () => void; onFinish
             Finalizar y ver mi lista
           </button>
           <button onClick={onAddMore} className="w-full min-h-[52px] bg-transparent text-primary border-2 border-outline-variant rounded-full font-label-lg text-label-lg flex items-center justify-center hover:bg-surface-container-low hover:border-primary active:scale-[0.98] transition-all duration-200">
-            Agregar otra ensalada distinta
+            Agregar otra sopa distinta
           </button>
         </div>
       </main>
@@ -316,7 +346,7 @@ export function ListaCompras({ cart, goModoCocina, goInicio, onBottomNav, onUpda
         <button onClick={goInicio} className="mr-4 hover:opacity-80 transition-opacity active:scale-95 duration-150 flex items-center justify-center p-2 -ml-2 rounded-full">
           <span className="material-symbols-outlined text-[28px]">arrow_back</span>
         </button>
-        <span className="font-display-lg text-display-lg font-bold text-primary truncate">Ensaladas en Frasco</span>
+        <span className="font-display-lg text-display-lg font-bold text-primary truncate">Sopas que Deshinchan</span>
       </header>
 
       <main className="pt-[96px] px-margin-mobile md:px-8 max-w-3xl mx-auto space-y-stack-lg pb-32">
@@ -329,19 +359,31 @@ export function ListaCompras({ cart, goModoCocina, goInicio, onBottomNav, onUpda
             <div className="flex flex-col gap-4 relative z-10 w-full">
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined icon-fill">restaurant_menu</span>
+                  <span className="material-symbols-outlined icon-fill">soup_kitchen</span>
                 </div>
                 <div className="w-full">
                   <h2 className="font-headline-md text-headline-md text-on-surface mb-4">Menú elegido</h2>
                   <ul className="space-y-4 w-full">
                     {cart.map(item => {
-                      const e = ENSALADAS.find(x => x.id === item.ensaladaId);
+                      const sopa = SOPAS.find(x => x.id === item.sopaId);
+                      const caldoBase = CALDOS_BASE.find(x => x.id === item.caldoBaseId);
+                      const agregados = AGREGADOS_FAMILIARES.filter(x => item.agregadoIds.includes(x.id));
                       return (
                         <li key={item.id} className="flex flex-col gap-2 border-b border-surface-variant last:border-0 pb-4 last:pb-0">
                           <div className="flex items-center justify-between text-on-surface-variant font-body-md w-full">
-                            <div className="flex items-center gap-2 truncate">
+                            <div className="flex flex-col min-w-0">
+                              <div className="flex items-center gap-2 truncate">
                               <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0"></span>
-                              <span className="truncate">{e?.nombre}</span>
+                                <span className="truncate text-on-surface">{sopa?.nombre}</span>
+                              </div>
+                              <span className="pl-3.5 text-body-md">
+                                Caldo base: {caldoBase?.nombre}
+                              </span>
+                              {agregados.length > 0 && (
+                                <span className="pl-3.5 text-body-md">
+                                  Agregados: {agregados.map(a => a.nombre).join(', ')}
+                                </span>
+                              )}
                             </div>
                           </div>
                           <div className="flex items-center justify-between mt-1">
@@ -369,7 +411,7 @@ export function ListaCompras({ cart, goModoCocina, goInicio, onBottomNav, onUpda
 
           <button onClick={onAddMore} className="w-full min-h-[52px] py-3 px-4 bg-transparent text-primary border-2 border-primary border-dashed rounded-xl flex items-center justify-center gap-2 font-label-lg mt-4 hover:bg-primary/5 transition-colors active:scale-[0.98] text-center">
             <span className="material-symbols-outlined icon-fill">add</span>
-            Agregar otra ensalada
+            Agregar otra sopa
           </button>
         </section>
 
@@ -422,10 +464,9 @@ export function ListaCompras({ cart, goModoCocina, goInicio, onBottomNav, onUpda
 
 // Preparación
 export function ModoCocina({ cart, onBack, onFinishClear, onBottomNav, onGoCatalogo, onGoHistorial }: { cart: CartItem[]; onBack: () => void; onFinishClear: () => void; onBottomNav: (s: string) => void; onGoCatalogo: () => void; onGoHistorial: () => void }) {
-  // Extract unique aderezos
-  const uniqueAderezos = Array.from(new Set(cart.map(i => i.aderezoId))).map(id => ADEREZOS.find(a => a.id === id)!);
-  // Extract unique ensaladas for assembly steps
-  const uniqueEnsaladas = Array.from(new Set(cart.map(i => i.ensaladaId))).map(id => ENSALADAS.find(e => e.id === id)!);
+  const uniqueCaldosBase = Array.from(new Set(cart.map(i => i.caldoBaseId))).map(id => CALDOS_BASE.find(c => c.id === id)!);
+  const uniqueSopas = Array.from(new Set(cart.map(i => i.sopaId))).map(id => SOPAS.find(s => s.id === id)!);
+  const uniqueAgregados = Array.from(new Set(cart.flatMap(i => i.agregadoIds))).map(id => AGREGADOS_FAMILIARES.find(a => a.id === id)!);
 
   const isEmpty = cart.length === 0;
 
@@ -435,14 +476,14 @@ export function ModoCocina({ cart, onBack, onFinishClear, onBottomNav, onGoCatal
         <button onClick={onBack} className="text-primary hover:opacity-80 transition-opacity p-2 -ml-2 rounded-full">
           <span className="material-symbols-outlined icon-fill text-[28px]">arrow_back</span>
         </button>
-        <h1 className="ml-4 font-headline-md text-headline-md text-primary font-bold">Ensaladas en Frasco</h1>
+        <h1 className="ml-4 font-headline-md text-headline-md text-primary font-bold">Sopas que Deshinchan</h1>
       </header>
 
       <main className="max-w-screen-md mx-auto px-margin-mobile pt-stack-sm pb-stack-lg flex-grow flex flex-col w-full">
         {isEmpty ? (
           <div className="flex-grow flex flex-col items-center justify-center text-center space-y-8 py-12">
             <h2 className="font-display-lg text-display-lg text-on-background">
-              Todavía no seleccionaste ninguna ensalada para preparar.
+              Todavía no seleccionaste ninguna sopa para preparar.
             </h2>
             <div className="w-full flex flex-col gap-4 mt-8">
               <button onClick={onGoCatalogo} className="w-full h-auto min-h-[52px] py-3 px-4 bg-primary text-on-primary font-label-lg text-label-lg rounded-full shadow-md flex items-center justify-center gap-3 hover:opacity-90 transition-opacity active:scale-[0.98] text-center">
@@ -458,7 +499,7 @@ export function ModoCocina({ cart, onBack, onFinishClear, onBottomNav, onGoCatal
             <div className="mb-stack-lg border-b-2 border-surface-variant pb-stack-md">
               <span className="inline-block px-4 py-1 bg-secondary-container text-on-secondary-container rounded-full font-label-md text-label-md mb-stack-sm">Preparación</span>
               <h2 className="font-display-lg text-display-lg text-primary mb-stack-sm">Instrucciones</h2>
-              <p className="font-body-lg text-body-lg text-on-surface-variant">Sigue los pasos en orden para mantener los ingredientes frescos toda la semana.</p>
+              <p className="font-body-lg text-body-lg text-on-surface-variant">Sigue los pasos en orden para preparar tus porciones de la semana.</p>
             </div>
 
             <section className="mb-stack-lg">
@@ -466,14 +507,14 @@ export function ModoCocina({ cart, onBack, onFinishClear, onBottomNav, onGoCatal
                 <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-sm shrink-0">
                   <span className="material-symbols-outlined icon-fill">blender</span>
                 </div>
-                <h3 className="font-headline-lg text-headline-lg text-on-background">1. Preparar Aderezos</h3>
+                <h3 className="font-headline-lg text-headline-lg text-on-background">1. Preparar Caldos Base</h3>
               </div>
 
               <div className="space-y-6">
-                {uniqueAderezos.map(a => (
-                  <div key={a.id} className="space-y-4">
-                    <h4 className="font-headline-md text-primary px-2">{a.nombre}</h4>
-                    {a.preparacion.map((step, idx) => (
+                {uniqueCaldosBase.map(caldo => (
+                  <div key={caldo.id} className="space-y-4">
+                    <h4 className="font-headline-md text-primary px-2">#{caldo.codigo} {caldo.nombre}</h4>
+                    {caldo.preparacion.map((step, idx) => (
                       <div key={idx} className="p-6 rounded-xl border border-outline-variant shadow-sm bg-[#f0ede4]">
                         <p className="font-body-lg text-body-lg text-on-background">{step}</p>
                       </div>
@@ -488,16 +529,16 @@ export function ModoCocina({ cart, onBack, onFinishClear, onBottomNav, onGoCatal
                 <div className="w-12 h-12 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-sm shrink-0">
                   <span className="material-symbols-outlined icon-fill">view_agenda</span>
                 </div>
-                <h3 className="font-headline-lg text-headline-lg text-on-background">2. Armado (De Abajo hacia Arriba)</h3>
+                <h3 className="font-headline-lg text-headline-lg text-on-background">2. Cocinar Sopas</h3>
               </div>
 
-              {uniqueEnsaladas.map(ensalada => (
-                <div key={ensalada.id} className="mb-12">
-                  <h4 className="font-headline-md text-secondary px-2 mb-4">{ensalada.nombre}</h4>
+              {uniqueSopas.map(sopa => (
+                <div key={sopa.id} className="mb-12">
+                  <h4 className="font-headline-md text-secondary px-2 mb-4">{sopa.nombre}</h4>
                   <div className="space-y-4 relative before:absolute before:inset-0 before:ml-6 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-surface-variant">
-                    {ensalada.pasos_armado.map((paso, idx) => {
+                    {sopa.pasos_preparacion.map((paso, idx) => {
                       const isFirst = idx === 0;
-                      const isLast = idx === ensalada.pasos_armado.length - 1;
+                      const isLast = idx === sopa.pasos_preparacion.length - 1;
                       const colorClass = isFirst ? 'bg-primary-container text-on-primary-container' : isLast ? 'bg-tertiary-container text-on-tertiary' : 'bg-surface-variant text-on-surface-variant';
                       const borderColor = isFirst ? 'group-hover:border-primary' : isLast ? 'group-hover:border-tertiary' : '';
 
@@ -517,6 +558,25 @@ export function ModoCocina({ cart, onBack, onFinishClear, onBottomNav, onGoCatal
                 </div>
               ))}
             </section>
+
+            {uniqueAgregados.length > 0 && (
+              <section className="mt-stack-lg">
+                <div className="flex items-center gap-4 mb-stack-md">
+                  <div className="w-12 h-12 rounded-full bg-tertiary text-on-tertiary flex items-center justify-center shadow-sm shrink-0">
+                    <span className="material-symbols-outlined icon-fill">add_circle</span>
+                  </div>
+                  <h3 className="font-headline-lg text-headline-lg text-on-background">3. Agregados familiares opcionales</h3>
+                </div>
+                <div className="space-y-4">
+                  {uniqueAgregados.map(agregado => (
+                    <div key={agregado.id} className="p-6 rounded-xl border border-outline-variant shadow-sm bg-[#f0ede4]">
+                      <h4 className="font-label-lg text-label-lg mb-1">{agregado.nombre}</h4>
+                      <p className="font-body-lg text-body-lg text-on-background">{agregado.descripcion}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
 
             <div className="mt-stack-lg flex justify-center">
               <button onClick={onFinishClear} className="bg-primary text-on-primary min-h-[52px] py-3 px-8 rounded-full font-label-lg text-label-lg shadow-md hover:opacity-90 hover:shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 text-center w-full sm:w-auto">
@@ -565,7 +625,7 @@ export function Historial({ lists, onOpen, onBack, onDelete, onClear }: { lists:
                 <div key={list.id} onClick={() => onOpen(list)} className="bg-[#f0ede4] rounded-xl p-5 border border-outline-variant custom-shadow cursor-pointer hover:border-primary transition-all flex items-center justify-between group">
                   <div>
                     <h3 className="font-headline-md text-headline-md text-on-surface">{new Date(list.date).toLocaleDateString()}</h3>
-                    <p className="font-body-md text-body-md text-on-surface-variant mt-1">{list.items.reduce((acc, curr) => acc + curr.cantidad, 0)} frascos en total</p>
+                    <p className="font-body-md text-body-md text-on-surface-variant mt-1">{list.items.reduce((acc, curr) => acc + curr.cantidad, 0)} porciones en total</p>
                   </div>
                   <div className="flex items-center gap-3">
                     <button onClick={(e) => confirmDelete(e, list.id)} className="w-[52px] h-[52px] flex items-center justify-center rounded-full text-error bg-surface hover:bg-error-container hover:text-on-error-container transition-colors active:scale-95 shadow-sm border border-transparent hover:border-error/20">

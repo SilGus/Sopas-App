@@ -1,21 +1,36 @@
 import { CartItem } from './types';
-import { ENSALADAS } from './data';
+import { AGREGADOS_FAMILIARES, CALDOS_BASE, SOPAS } from './data';
 
 export function getGroupedIngredients(cart: CartItem[]) {
   const groups: Record<string, Record<string, { cantidad: number, unidad: string }>> = {};
+
+  const addIngredient = (categoria: string, nombre: string, cantidad: number, unidad: string) => {
+    if (!groups[categoria]) groups[categoria] = {};
+
+    if (!groups[categoria][nombre]) {
+      groups[categoria][nombre] = { cantidad: 0, unidad };
+    }
+
+    groups[categoria][nombre].cantidad += cantidad;
+  };
   
   cart.forEach(item => {
-    const ensalada = ENSALADAS.find(e => e.id === item.ensaladaId);
-    if (!ensalada) return;
+    const sopa = SOPAS.find(s => s.id === item.sopaId);
+    const caldoBase = CALDOS_BASE.find(c => c.id === item.caldoBaseId);
+    const agregados = AGREGADOS_FAMILIARES.filter(a => item.agregadoIds.includes(a.id));
     
-    ensalada.ingredientes.forEach(ing => {
-      if (!groups[ing.categoria]) groups[ing.categoria] = {};
-      
-      if (!groups[ing.categoria][ing.nombre]) {
-        groups[ing.categoria][ing.nombre] = { cantidad: 0, unidad: ing.unidad };
-      }
-      
-      groups[ing.categoria][ing.nombre].cantidad += (ing.cantidad_base * item.cantidad);
+    sopa?.ingredientes.forEach(ing => {
+      addIngredient(ing.categoria, ing.nombre, ing.cantidad_base * item.cantidad, ing.unidad);
+    });
+
+    caldoBase?.ingredientes.forEach(ing => {
+      addIngredient(ing.categoria, ing.nombre, ing.cantidad_base * item.cantidad, ing.unidad);
+    });
+
+    agregados.forEach(agregado => {
+      agregado.ingredientes.forEach(ing => {
+        addIngredient(ing.categoria, ing.nombre, ing.cantidad_base * item.cantidad, ing.unidad);
+      });
     });
   });
 
@@ -23,7 +38,7 @@ export function getGroupedIngredients(cart: CartItem[]) {
 }
 
 export function generateWhatsAppMessage(groups: Record<string, Record<string, { cantidad: number, unidad: string }>>): string {
-  let text = "🛒 *Mi Lista de Compras*\n\n";
+  let text = "*Mi Lista de Compras - Sopas que Deshinchan*\n\n";
   for (const [category, items] of Object.entries(groups)) {
     text += `*${category}*\n`;
     for (const [nombre, data] of Object.entries(items)) {
@@ -36,7 +51,6 @@ export function generateWhatsAppMessage(groups: Record<string, Record<string, { 
   return text;
 }
 
-// src/utils.ts
 export const formatearMedida = (valor: number, unidad: string): string => {
   const fracciones: Record<string, string> = {
     "0.25": "1/4",
@@ -56,5 +70,5 @@ export const formatearMedida = (valor: number, unidad: string): string => {
     return `${fraccion}`;
   }
   
-  return `${valor} ${unidad}`;
+  return `${fraccion} ${unidad}`;
 };

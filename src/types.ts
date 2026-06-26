@@ -5,31 +5,41 @@ export interface Ingrediente {
   unidad: string;
 }
 
-export interface PasoArmado {
+export interface PasoPreparacion {
   titulo: string;
   descripcion: string;
 }
 
-export interface Ensalada {
+export interface Sopa {
   id: number;
   nombre: string;
-  categoria_ensalada: string;
-  aderezo_sugerido_id: number;
+  categoria_sopa: string;
+  caldo_base_sugerido_id: number;
   ingredientes: Ingrediente[];
-  pasos_armado: PasoArmado[];
+  pasos_preparacion: PasoPreparacion[];
 }
 
-export interface Aderezo {
+export interface CaldoBase {
+  id: number;
+  codigo: string;
+  nombre: string;
+  descripcion: string;
+  ingredientes: Ingrediente[];
+  preparacion: string[];
+}
+
+export interface AgregadoFamiliar {
   id: number;
   nombre: string;
   descripcion: string;
-  preparacion: string[];
+  ingredientes: Ingrediente[];
 }
 
 export interface CartItem {
   id: string;
-  ensaladaId: number;
-  aderezoId: number;
+  sopaId: number;
+  caldoBaseId: number;
+  agregadoIds: number[];
   cantidad: number;
 }
 
