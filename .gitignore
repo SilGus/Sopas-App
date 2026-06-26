@@ -1,0 +1,26 @@
+# Dependencias
+node_modules/
+
+# Build / producción
+dist/
+build/
+
+# Variables de entorno
+.env
+.env.local
+.env.*.local
+
+# Vercel
+.vercel/
+
+# Sistema
+.DS_Store
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor
+.vscode/
