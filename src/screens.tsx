@@ -152,10 +152,11 @@ export function Catalogo({ onSelect, onBottomNav }: { onSelect: (id: number) => 
 }
 
 // Pantalla 2: Caldo Base
-export function CaldoBaseScreen({ sopaId, onConfirm, onBack }: { sopaId: number; onConfirm: (caldoBaseId: number, agregadoIds: number[]) => void; onBack: () => void }) {
+export function CaldoBaseScreen({ sopaId, initialCaldoBaseId, initialAgregadoIds = [], initialIncludeCaldoIngredients = true, onConfirm, onBack }: { sopaId: number; initialCaldoBaseId?: number; initialAgregadoIds?: number[]; initialIncludeCaldoIngredients?: boolean; onConfirm: (caldoBaseId: number, agregadoIds: number[], includeCaldoIngredients: boolean) => void; onBack: () => void }) {
   const sopa = SOPAS.find(s => s.id === sopaId)!;
-  const [selected, setSelected] = useState(sopa.caldo_base_sugerido_id);
-  const [selectedAgregados, setSelectedAgregados] = useState<number[]>([]);
+  const [selected, setSelected] = useState(initialCaldoBaseId ?? sopa.caldo_base_sugerido_id);
+  const [selectedAgregados, setSelectedAgregados] = useState<number[]>(initialAgregadoIds);
+  const [includeCaldoIngredients, setIncludeCaldoIngredients] = useState(initialIncludeCaldoIngredients);
 
   const caldoSugerido = CALDOS_BASE.find(c => c.id === sopa.caldo_base_sugerido_id)!;
   const otrosCaldos = CALDOS_BASE.filter(c => c.id !== sopa.caldo_base_sugerido_id);
@@ -238,6 +239,45 @@ export function CaldoBaseScreen({ sopaId, onConfirm, onBack }: { sopaId: number;
         </section>
 
         <section className="space-y-stack-sm">
+          <h3 className="font-headline-md text-headline-md text-on-surface px-1">Caldo base en la lista</h3>
+          <div className="space-y-stack-sm">
+            <label className={`bg-[#f0ede4] rounded-xl p-5 border-2 transition-all cursor-pointer flex items-start gap-4 ${!includeCaldoIngredients ? 'border-primary-container' : 'border-transparent'}`}>
+              <input
+                type="radio"
+                name="caldo-base-lista"
+                className="sr-only"
+                checked={!includeCaldoIngredients}
+                onChange={() => setIncludeCaldoIngredients(false)}
+              />
+              <span className={`material-symbols-outlined mt-1 ${!includeCaldoIngredients ? 'text-primary icon-fill' : 'text-on-surface-variant'}`}>
+                kitchen
+              </span>
+              <span className="flex-1">
+                <span className="block font-headline-md text-headline-md text-on-surface">Ya tengo caldo base preparado</span>
+                <span className="block font-body-md text-body-md text-on-surface-variant">No suma los ingredientes del caldo a la lista de compras.</span>
+              </span>
+            </label>
+
+            <label className={`bg-[#f0ede4] rounded-xl p-5 border-2 transition-all cursor-pointer flex items-start gap-4 ${includeCaldoIngredients ? 'border-primary-container' : 'border-transparent'}`}>
+              <input
+                type="radio"
+                name="caldo-base-lista"
+                className="sr-only"
+                checked={includeCaldoIngredients}
+                onChange={() => setIncludeCaldoIngredients(true)}
+              />
+              <span className={`material-symbols-outlined mt-1 ${includeCaldoIngredients ? 'text-primary icon-fill' : 'text-on-surface-variant'}`}>
+                shopping_basket
+              </span>
+              <span className="flex-1">
+                <span className="block font-headline-md text-headline-md text-on-surface">Quiero sumar los ingredientes del caldo a mi lista</span>
+                <span className="block font-body-md text-body-md text-on-surface-variant">Incluye el caldo base y sus ingredientes en la lista de compras.</span>
+              </span>
+            </label>
+          </div>
+        </section>
+
+        <section className="space-y-stack-sm">
           <h3 className="font-headline-md text-headline-md text-on-surface px-1">Agregados familiares opcionales</h3>
           <div className="space-y-stack-sm">
             {AGREGADOS_FAMILIARES.map(agregado => {
@@ -267,7 +307,7 @@ export function CaldoBaseScreen({ sopaId, onConfirm, onBack }: { sopaId: number;
       </main>
 
       <div className="fixed bottom-0 left-0 w-full bg-white/80 backdrop-blur-md p-gutter-mobile border-t border-outline-variant flex justify-center items-center h-28 z-40">
-        <button onClick={() => onConfirm(selected, selectedAgregados)} className="bg-primary hover:bg-primary-container text-white w-full max-w-lg min-h-[64px] py-4 px-6 rounded-full font-headline-lg text-headline-lg flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all text-center">
+        <button onClick={() => onConfirm(selected, selectedAgregados, includeCaldoIngredients)} className="bg-primary hover:bg-primary-container text-white w-full max-w-lg min-h-[64px] py-4 px-6 rounded-full font-headline-lg text-headline-lg flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all text-center">
           Confirmar Caldo Base
           <span className="material-symbols-outlined">arrow_forward</span>
         </button>
@@ -277,7 +317,7 @@ export function CaldoBaseScreen({ sopaId, onConfirm, onBack }: { sopaId: number;
 }
 
 // Pantalla 3: Porciones
-export function Porciones({ sopaId, caldoBaseId, onConfirm, onBack }: { sopaId: number; caldoBaseId: number; onConfirm: (qty: number) => void; onBack: () => void }) {
+export function Porciones({ sopaId, caldoBaseId, includeCaldoIngredients = true, onConfirm, onBack }: { sopaId: number; caldoBaseId: number; includeCaldoIngredients?: boolean; onConfirm: (qty: number) => void; onBack: () => void }) {
   const [qty, setQty] = useState(1);
   const sopa = SOPAS.find(s => s.id === sopaId)!;
   const caldoBase = CALDOS_BASE.find(c => c.id === caldoBaseId)!;
@@ -292,6 +332,9 @@ export function Porciones({ sopaId, caldoBaseId, onConfirm, onBack }: { sopaId: 
       <main className="flex-grow flex flex-col items-center justify-center px-margin-mobile max-w-md mx-auto w-full text-center">
         <h2 className="font-display-lg-mobile text-display-lg-mobile text-on-background mb-2">{sopa.nombre}</h2>
         <p className="font-body-md text-body-md text-on-surface-variant mb-2">Caldo base: {caldoBase.nombre}</p>
+        <p className="font-body-md text-body-md text-on-surface-variant mb-2">
+          {includeCaldoIngredients ? 'Se sumarán los ingredientes del caldo a la lista.' : 'Ya tenés el caldo preparado; no se sumarán sus ingredientes.'}
+        </p>
         {sopa.notaCaldoBase && (
           <p className="font-body-md text-body-md text-on-surface-variant mb-2">{sopa.notaCaldoBase}</p>
         )}
@@ -390,6 +433,7 @@ export function ListaCompras({ cart, goModoCocina, goInicio, onBottomNav, onUpda
                       const sopa = SOPAS.find(x => x.id === item.sopaId);
                       const caldoBase = CALDOS_BASE.find(x => x.id === item.caldoBaseId);
                       const agregados = AGREGADOS_FAMILIARES.filter(x => item.agregadoIds.includes(x.id));
+                      const includeCaldoIngredients = item.includeCaldoIngredients !== false;
                       return (
                         <li key={item.id} className="flex flex-col gap-2 border-b border-surface-variant last:border-0 pb-4 last:pb-0">
                           <div className="flex items-center justify-between text-on-surface-variant font-body-md w-full">
@@ -400,6 +444,9 @@ export function ListaCompras({ cart, goModoCocina, goInicio, onBottomNav, onUpda
                               </div>
                               <span className="pl-3.5 text-body-md">
                                 Caldo base: {caldoBase?.nombre}
+                              </span>
+                              <span className="pl-3.5 text-body-md">
+                                {includeCaldoIngredients ? 'Incluye ingredientes del caldo' : 'Ya tienes el caldo preparado'}
                               </span>
                               {agregados.length > 0 && (
                                 <span className="pl-3.5 text-body-md">
@@ -445,8 +492,8 @@ export function ListaCompras({ cart, goModoCocina, goInicio, onBottomNav, onUpda
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {Object.entries(items).map(([nombre, data]) => (
-                <label key={nombre} className="glass-card rounded-xl p-4 flex items-center gap-4 cursor-pointer active:scale-[0.98] transition-transform has-[:checked]:bg-surface-container-low has-[:checked]:opacity-50">
+              {items.map(data => (
+                <label key={`${data.nombre}-${data.unidad}`} className="glass-card rounded-xl p-4 flex items-center gap-4 cursor-pointer active:scale-[0.98] transition-transform has-[:checked]:bg-surface-container-low has-[:checked]:opacity-50">
                   <input className="checkbox-custom sr-only peer" type="checkbox" />
                   <div className="w-8 h-8 rounded border-2 border-outline flex items-center justify-center transition-colors duration-200 shrink-0 bg-surface-container-lowest peer-checked:bg-primary peer-checked:border-primary">
                     <span className="material-symbols-outlined text-on-primary text-[20px] opacity-0 scale-50 transition-all duration-200 peer-checked:opacity-100 peer-checked:scale-100 icon-fill">check</span>
@@ -456,7 +503,7 @@ export function ListaCompras({ cart, goModoCocina, goInicio, onBottomNav, onUpda
                       {formatearMedida(data.cantidad, data.unidad)}
                     </span>
                     <span className="font-body-lg text-on-surface text-left break-words flex-1 leading-tight mt-[1px]">
-                      {nombre}
+                      {data.nombre}
                     </span>
                   </div>
                 </label>
@@ -533,7 +580,7 @@ export function ModoCocina({ cart, onBack, onFinishClear, onBottomNav, onGoCatal
               </div>
 
               <div className="space-y-6">
-                {uniqueCaldosBase.map(caldo => (
+                  {uniqueCaldosBase.map(caldo => (
                   <div key={caldo.id} className="space-y-4">
                     <div className="px-2">
                       <h4 className="font-headline-md text-primary">#{caldo.numero} {caldo.nombre}</h4>

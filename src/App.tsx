@@ -44,25 +44,26 @@ export default function App() {
   };
 
   const handleSelectSoup = (id: number) => {
-    setSelection({ sopaId: id, agregadoIds: [] });
+    setSelection({ sopaId: id, agregadoIds: [], includeCaldoIngredients: true });
     setCurrentScreen('caldoBase');
   };
 
-  const handleSelectCaldoBase = (caldoBaseId: number, agregadoIds: number[]) => {
-    setSelection(prev => ({ ...prev, caldoBaseId, agregadoIds }));
+  const handleSelectCaldoBase = (caldoBaseId: number, agregadoIds: number[], includeCaldoIngredients: boolean) => {
+    setSelection(prev => ({ ...prev, caldoBaseId, agregadoIds, includeCaldoIngredients }));
     setCurrentScreen('porciones');
   };
 
   const handleAddPortions = (qty: number) => {
     setCart(prev => [
       ...prev,
-      {
-        id: crypto.randomUUID(),
-        sopaId: selection.sopaId!,
-        caldoBaseId: selection.caldoBaseId!,
-        agregadoIds: selection.agregadoIds ?? [],
-        cantidad: qty
-      }
+        {
+          id: crypto.randomUUID(),
+          sopaId: selection.sopaId!,
+          caldoBaseId: selection.caldoBaseId!,
+          agregadoIds: selection.agregadoIds ?? [],
+          includeCaldoIngredients: selection.includeCaldoIngredients !== false,
+          cantidad: qty
+        }
     ]);
     setCurrentScreen('bucle');
   };
@@ -116,6 +117,9 @@ export default function App() {
       {currentScreen === 'caldoBase' && (
         <CaldoBaseScreen
           sopaId={selection.sopaId!} 
+          initialCaldoBaseId={selection.caldoBaseId}
+          initialAgregadoIds={selection.agregadoIds}
+          initialIncludeCaldoIngredients={selection.includeCaldoIngredients !== false}
           onConfirm={handleSelectCaldoBase} 
           onBack={() => setCurrentScreen('catalogo')} 
         />
@@ -124,6 +128,7 @@ export default function App() {
         <Porciones 
           sopaId={selection.sopaId!} 
           caldoBaseId={selection.caldoBaseId!} 
+          includeCaldoIngredients={selection.includeCaldoIngredients !== false}
           onConfirm={handleAddPortions} 
           onBack={() => setCurrentScreen('caldoBase')} 
         />

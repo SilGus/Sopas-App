@@ -51,6 +51,7 @@ export interface CartItem {
   sopaId: number;
   caldoBaseId: number;
   agregadoIds: number[];
+  includeCaldoIngredients?: boolean;
   cantidad: number;
 }
 
