@@ -41,16 +41,16 @@ function BottomNav({ active, onNavigate }: { active: string; onNavigate: (s: str
 export function Inicio({ onNewList, onHistory, onBottomNav }: { onNewList: () => void; onHistory: () => void; onBottomNav: (s: string) => void }) {
   return (
     <div className="bg-background text-on-background min-h-screen flex flex-col font-body-md antialiased pb-32">
-      <header className="flex items-center px-margin-mobile h-[72px] w-full max-w-screen-xl mx-auto justify-center z-40">
-        <h1 className="font-display-lg text-display-lg font-bold text-primary">Sopas que Deshinchan</h1>
-      </header>
-      <main className="flex-grow flex flex-col items-center justify-center px-margin-mobile max-w-screen-md mx-auto w-full gap-stack-lg">
-        <div className="flex justify-center my-6">
-          <div className="w-full max-w-[300px] aspect-square rounded-2xl shadow-lg bg-surface-container flex items-center justify-center border border-outline-variant">
-            <span className="material-symbols-outlined icon-fill text-primary text-[132px]">soup_kitchen</span>
-          </div>
+      <main className="flex-grow flex flex-col items-center justify-between px-margin-mobile max-w-screen-md mx-auto w-full pt-8 pb-8">
+        <div className="flex w-full justify-center pt-2 pb-6">
+          <img
+            src="/assets/tapa-app-sopas.webp"
+            alt="Tapa de Sopas que Deshinchan"
+            className="w-full max-w-[400px] aspect-[4/5] object-contain drop-shadow-[0_14px_28px_rgba(63,41,20,0.12)]"
+            loading="eager"
+          />
         </div>
-        <div className="w-full flex flex-col gap-stack-md mt-stack-md">
+        <div className="w-full flex flex-col gap-stack-md pb-2">
           <button onClick={onNewList} className="w-full h-auto min-h-[52px] py-3 px-4 bg-primary text-on-primary font-label-lg text-label-lg rounded-full shadow-md flex items-center justify-center gap-3 hover:opacity-90 transition-opacity active:scale-[0.98] text-center">
             <span className="material-symbols-outlined icon-fill">add_circle</span>
             Crear Nueva Lista
