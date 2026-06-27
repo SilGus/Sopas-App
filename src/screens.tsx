@@ -121,7 +121,7 @@ export function Catalogo({ onSelect, onBottomNav }: { onSelect: (id: number) => 
         {filteredSopas.length > 0 ? (
           <div className="grid grid-cols-1 gap-4">
             {filteredSopas.map(s => (
-              <div key={s.id} onClick={() => onSelect(s.id)} className="bg-[#f0ede4] rounded-xl p-4 flex items-center gap-4 border border-outline-variant custom-shadow cursor-pointer hover:border-primary transition-all group">
+              <div key={s.id} onClick={() => onSelect(s.id)} className="bg-surface-container-low rounded-xl p-4 flex items-center gap-4 border border-outline-variant custom-shadow cursor-pointer hover:border-primary transition-all group">
                 <div className="w-14 h-14 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-display-sm font-bold shrink-0 shadow-sm border-2 border-white group-hover:scale-105 transition-transform">
                   #{s.numero}
                 </div>
@@ -177,7 +177,7 @@ export function CaldoBaseScreen({ sopaId, initialCaldoBaseId, initialAgregadoIds
       </header>
       <main className="px-margin-mobile pt-stack-md space-y-stack-lg max-w-xl mx-auto">
         <section>
-          <div className="bg-[#f0ede4] rounded-xl p-6 flex items-center justify-between border border-outline-variant custom-shadow">
+          <div className="bg-surface-container-low rounded-xl p-6 flex items-center justify-between border border-outline-variant custom-shadow">
             <div className="flex flex-col">
               <span className="text-on-surface-variant font-label-md text-label-md">Sopa seleccionada</span>
               <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">{sopa.nombre}</h2>
@@ -191,8 +191,8 @@ export function CaldoBaseScreen({ sopaId, initialCaldoBaseId, initialAgregadoIds
 
         <section className="space-y-stack-sm">
           <h3 className="font-headline-md text-headline-md text-on-surface px-1">Caldo Base recomendado</h3>
-          <div onClick={() => setSelected(caldoSugerido.id)} className={`bg-[#f0ede4] rounded-xl p-1 border-4 transition-all cursor-pointer ${selected === caldoSugerido.id ? 'border-primary-container' : 'border-transparent'}`}>
-            <div className="bg-white rounded-lg p-5 flex items-center gap-4">
+          <div onClick={() => setSelected(caldoSugerido.id)} className={`bg-surface-container-low rounded-xl p-1 border-4 transition-all cursor-pointer ${selected === caldoSugerido.id ? 'border-primary-container' : 'border-transparent'}`}>
+            <div className="bg-surface-container-lowest rounded-lg p-5 flex items-center gap-4">
               <div className="bg-secondary-container p-3 rounded-full">
                 <span className="material-symbols-outlined text-on-secondary-container icon-fill">soup_kitchen</span>
               </div>
@@ -228,7 +228,7 @@ export function CaldoBaseScreen({ sopaId, initialCaldoBaseId, initialAgregadoIds
           <h3 className="font-headline-md text-headline-md text-on-surface px-1">Otros Caldos Base</h3>
           <div className="space-y-stack-sm">
             {otrosCaldos.map(c => (
-              <div key={c.id} onClick={() => setSelected(c.id)} className={`bg-[#f0ede4] rounded-xl p-5 border-2 transition-all cursor-pointer ${selected === c.id ? 'border-primary-container' : 'border-transparent'}`}>
+              <div key={c.id} onClick={() => setSelected(c.id)} className={`bg-surface-container-low rounded-xl p-5 border-2 transition-all cursor-pointer ${selected === c.id ? 'border-primary-container' : 'border-transparent'}`}>
                 <div className="flex flex-col gap-3">
                   <div className="flex flex-col gap-1">
                     <h4 className="font-headline-md text-headline-md text-on-surface">#{c.numero} {c.nombre}</h4>
@@ -240,7 +240,7 @@ export function CaldoBaseScreen({ sopaId, initialCaldoBaseId, initialAgregadoIds
                     <p className="font-body-md text-body-md text-on-surface-variant mt-1">{c.valorNutricional}</p>
                   </div>
                   <div className="flex items-center justify-start shrink-0">
-                    <button className={selected === c.id ? 'bg-primary-container text-white px-4 py-2 rounded-xl font-label-md text-label-md active:scale-95 transition-all w-full sm:w-auto' : 'bg-white border-2 border-outline px-4 py-2 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container active:scale-95 transition-all w-full sm:w-auto'}>
+                    <button className={selected === c.id ? 'bg-primary-container text-white px-4 py-2 rounded-xl font-label-md text-label-md active:scale-95 transition-all w-full sm:w-auto' : 'bg-surface-container-lowest border-2 border-outline px-4 py-2 rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container active:scale-95 transition-all w-full sm:w-auto'}>
                       {selected === c.id ? 'Seleccionado' : 'Seleccionar'}
                     </button>
                   </div>
@@ -253,7 +253,7 @@ export function CaldoBaseScreen({ sopaId, initialCaldoBaseId, initialAgregadoIds
         <section className="space-y-stack-sm">
           <h3 className="font-headline-md text-headline-md text-on-surface px-1">Caldo base en la lista</h3>
           <div className="space-y-stack-sm">
-            <label className={`bg-[#f0ede4] rounded-xl p-5 border-2 transition-all cursor-pointer flex items-start gap-4 ${!includeCaldoIngredients ? 'border-primary-container' : 'border-transparent'}`}>
+            <label className={`bg-surface-container-low rounded-xl p-5 border-2 transition-all cursor-pointer flex items-start gap-4 ${!includeCaldoIngredients ? 'border-primary-container' : 'border-transparent'}`}>
               <input
                 type="radio"
                 name="caldo-base-lista"
@@ -270,7 +270,7 @@ export function CaldoBaseScreen({ sopaId, initialCaldoBaseId, initialAgregadoIds
               </span>
             </label>
 
-            <label className={`bg-[#f0ede4] rounded-xl p-5 border-2 transition-all cursor-pointer flex items-start gap-4 ${includeCaldoIngredients ? 'border-primary-container' : 'border-transparent'}`}>
+            <label className={`bg-surface-container-low rounded-xl p-5 border-2 transition-all cursor-pointer flex items-start gap-4 ${includeCaldoIngredients ? 'border-primary-container' : 'border-transparent'}`}>
               <input
                 type="radio"
                 name="caldo-base-lista"
@@ -295,7 +295,7 @@ export function CaldoBaseScreen({ sopaId, initialCaldoBaseId, initialAgregadoIds
             {AGREGADOS_FAMILIARES.map(agregado => {
               const isSelected = selectedAgregados.includes(agregado.id);
               return (
-                <label key={agregado.id} className={`bg-[#f0ede4] rounded-xl p-5 border-2 transition-all cursor-pointer flex items-start gap-4 ${isSelected ? 'border-primary-container' : 'border-transparent'}`}>
+                <label key={agregado.id} className={`bg-surface-container-low rounded-xl p-5 border-2 transition-all cursor-pointer flex items-start gap-4 ${isSelected ? 'border-primary-container' : 'border-transparent'}`}>
                   <input
                     type="checkbox"
                     className="sr-only"
@@ -318,7 +318,7 @@ export function CaldoBaseScreen({ sopaId, initialCaldoBaseId, initialAgregadoIds
         </section>
       </main>
 
-      <div className="fixed bottom-0 left-0 w-full bg-white/80 backdrop-blur-md p-gutter-mobile border-t border-outline-variant flex justify-center items-center h-28 z-40">
+      <div className="fixed bottom-0 left-0 w-full bg-surface/90 backdrop-blur-md p-gutter-mobile border-t border-outline-variant flex justify-center items-center h-28 z-40">
         <button onClick={() => onConfirm(selected, selectedAgregados, includeCaldoIngredients)} className="bg-primary hover:bg-primary-container text-white w-full max-w-lg min-h-[64px] py-4 px-6 rounded-full font-headline-lg text-headline-lg flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all text-center">
           Confirmar Caldo Base
           <span className="material-symbols-outlined">arrow_forward</span>
@@ -355,8 +355,8 @@ export function Porciones({ sopaId, caldoBaseId, includeCaldoIngredients = true,
         )}
         <p className="font-body-lg text-body-lg text-on-surface-variant mb-12">¿Cuántas porciones quieres preparar?</p>
 
-        <div className="flex items-center justify-center gap-8 bg-[#f0ede4] rounded-full p-2 border border-outline-variant shadow-sm w-full">
-          <button onClick={() => setQty(Math.max(1, qty - 1))} className="w-16 h-16 rounded-full bg-white flex items-center justify-center text-primary shadow hover:bg-surface-container active:scale-95 transition-all">
+        <div className="flex items-center justify-center gap-8 bg-surface-container-low rounded-full p-2 border border-outline-variant shadow-sm w-full">
+          <button onClick={() => setQty(Math.max(1, qty - 1))} className="w-16 h-16 rounded-full bg-surface-container-lowest flex items-center justify-center text-primary shadow hover:bg-surface-container active:scale-95 transition-all">
             <span className="material-symbols-outlined text-3xl">remove</span>
           </button>
           <span className="font-display-lg text-5xl font-bold text-on-surface w-16">{qty}</span>
@@ -366,7 +366,7 @@ export function Porciones({ sopaId, caldoBaseId, includeCaldoIngredients = true,
         </div>
       </main>
 
-      <div className="fixed bottom-0 left-0 w-full bg-white/80 backdrop-blur-md p-gutter-mobile border-t border-outline-variant flex justify-center items-center h-28 z-40">
+      <div className="fixed bottom-0 left-0 w-full bg-surface/90 backdrop-blur-md p-gutter-mobile border-t border-outline-variant flex justify-center items-center h-28 z-40">
         <button onClick={() => onConfirm(qty)} className="bg-primary hover:bg-primary-container text-white w-full max-w-lg min-h-[64px] py-4 px-6 rounded-full font-headline-lg text-headline-lg flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all text-center">
           <span className="material-symbols-outlined">add_shopping_cart</span>
           Agregar a la lista
@@ -687,7 +687,7 @@ export function ModoCocina({ cart, onBack, onFinishClear, onBottomNav, onGoCatal
                       )}
                     </div>
                     {caldo.preparacion.map((step, idx) => (
-                      <div key={idx} className="p-6 rounded-xl border border-outline-variant shadow-sm bg-[#f0ede4]">
+                      <div key={idx} className="p-6 rounded-xl border border-outline-variant shadow-sm bg-surface-container-low">
                         <p className="font-body-lg text-body-lg text-on-background">{step}</p>
                       </div>
                     ))}
@@ -719,7 +719,7 @@ export function ModoCocina({ cart, onBack, onFinishClear, onBottomNav, onGoCatal
                           <div className={`flex items-center justify-center w-12 h-12 rounded-full border-4 border-surface-container-lowest shadow-sm z-10 shrink-0 md:mx-auto ${colorClass}`}>
                             <span className="font-headline-md text-headline-md">{idx + 1}</span>
                           </div>
-                          <div className={`w-[calc(100%-4rem)] md:w-[calc(50%-3rem)] p-6 rounded-xl border border-outline-variant shadow-sm transition-colors ml-4 md:ml-0 bg-[#f0ede4] ${borderColor} ${idx % 2 !== 0 ? 'md:mr-0' : ''}`}>
+                          <div className={`w-[calc(100%-4rem)] md:w-[calc(50%-3rem)] p-6 rounded-xl border border-outline-variant shadow-sm transition-colors ml-4 md:ml-0 bg-surface-container-low ${borderColor} ${idx % 2 !== 0 ? 'md:mr-0' : ''}`}>
                             <h4 className="font-label-lg text-label-lg mb-1">{paso.titulo}</h4>
                             <p className="font-body-lg text-body-lg text-on-background">{paso.descripcion}</p>
                           </div>
@@ -728,7 +728,7 @@ export function ModoCocina({ cart, onBack, onFinishClear, onBottomNav, onGoCatal
                     })}
                   </div>
                   {sopa.tip && (
-                    <div className="mt-4 p-6 rounded-xl border border-outline-variant shadow-sm bg-[#f0ede4]">
+                    <div className="mt-4 p-6 rounded-xl border border-outline-variant shadow-sm bg-surface-container-low">
                       <h5 className="font-label-lg text-label-lg mb-1">Tip</h5>
                       <p className="font-body-lg text-body-lg text-on-background">{sopa.tip}</p>
                     </div>
@@ -747,7 +747,7 @@ export function ModoCocina({ cart, onBack, onFinishClear, onBottomNav, onGoCatal
                 </div>
                 <div className="space-y-4">
                   {uniqueAgregados.map(agregado => (
-                    <div key={agregado.id} className="p-6 rounded-xl border border-outline-variant shadow-sm bg-[#f0ede4]">
+                    <div key={agregado.id} className="p-6 rounded-xl border border-outline-variant shadow-sm bg-surface-container-low">
                       <span className="font-label-md text-label-md text-secondary">#{agregado.numero} · {agregado.cantidadSugerida}</span>
                       <h4 className="font-label-lg text-label-lg mb-1">{agregado.nombre}</h4>
                       <p className="font-body-lg text-body-lg text-on-background">{agregado.descripcion}</p>
@@ -802,7 +802,7 @@ export function Historial({ lists, onOpen, onBack, onDelete, onClear }: { lists:
           <div className="space-y-4 flex-grow flex flex-col">
             <div className="space-y-4">
               {lists.map(list => (
-                <div key={list.id} onClick={() => onOpen(list)} className="bg-[#f0ede4] rounded-xl p-5 border border-outline-variant custom-shadow cursor-pointer hover:border-primary transition-all flex items-center justify-between group">
+                <div key={list.id} onClick={() => onOpen(list)} className="bg-surface-container-low rounded-xl p-5 border border-outline-variant custom-shadow cursor-pointer hover:border-primary transition-all flex items-center justify-between group">
                   <div>
                     <h3 className="font-headline-md text-headline-md text-on-surface">{new Date(list.date).toLocaleDateString()}</h3>
                     <p className="font-body-md text-body-md text-on-surface-variant mt-1">{list.items.reduce((acc, curr) => acc + curr.cantidad, 0)} porciones en total</p>
