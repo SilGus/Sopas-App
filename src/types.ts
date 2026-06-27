@@ -33,8 +33,11 @@ export interface CaldoBase {
 
 export interface AgregadoFamiliar {
   id: number;
+  numero: string;
   nombre: string;
+  cantidadSugerida: string;
   descripcion: string;
+  tipPractico: string;
   ingredientes: Ingrediente[];
 }
 

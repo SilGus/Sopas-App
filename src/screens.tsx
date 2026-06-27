@@ -247,8 +247,10 @@ export function CaldoBaseScreen({ sopaId, onConfirm, onBack }: { sopaId: number;
                     {isSelected ? 'check_circle' : 'add_circle'}
                   </span>
                   <span className="flex-1">
+                    <span className="block font-label-md text-label-md text-secondary">#{agregado.numero} · {agregado.cantidadSugerida}</span>
                     <span className="block font-headline-md text-headline-md text-on-surface">{agregado.nombre}</span>
                     <span className="block font-body-md text-body-md text-on-surface-variant">{agregado.descripcion}</span>
+                    <span className="block font-body-md text-body-md text-on-surface-variant mt-1">{agregado.tipPractico}</span>
                   </span>
                 </label>
               );
@@ -585,8 +587,10 @@ export function ModoCocina({ cart, onBack, onFinishClear, onBottomNav, onGoCatal
                 <div className="space-y-4">
                   {uniqueAgregados.map(agregado => (
                     <div key={agregado.id} className="p-6 rounded-xl border border-outline-variant shadow-sm bg-[#f0ede4]">
+                      <span className="font-label-md text-label-md text-secondary">#{agregado.numero} · {agregado.cantidadSugerida}</span>
                       <h4 className="font-label-lg text-label-lg mb-1">{agregado.nombre}</h4>
                       <p className="font-body-lg text-body-lg text-on-background">{agregado.descripcion}</p>
+                      <p className="font-body-lg text-body-lg text-on-background mt-2">{agregado.tipPractico}</p>
                     </div>
                   ))}
                 </div>
