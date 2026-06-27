@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Inicio, Catalogo, CaldoBaseScreen, Porciones, Bucle, ListaCompras, ModoCocina, Historial } from './screens';
+import { SOPAS } from './data';
 import { CartItem, SavedList } from './types';
 
 type ScreenState = 'inicio' | 'catalogo' | 'caldoBase' | 'porciones' | 'bucle' | 'lista' | 'cocina' | 'historial';
@@ -44,7 +45,8 @@ export default function App() {
   };
 
   const handleSelectSoup = (id: number) => {
-    setSelection({ sopaId: id, agregadoIds: [], includeCaldoIngredients: true });
+    const sopa = SOPAS.find(s => s.id === id);
+    setSelection({ sopaId: id, porcionesBase: sopa?.porcionesBase, agregadoIds: [], includeCaldoIngredients: true });
     setCurrentScreen('caldoBase');
   };
 
@@ -54,6 +56,7 @@ export default function App() {
   };
 
   const handleAddPortions = (qty: number) => {
+    const sopa = SOPAS.find(s => s.id === selection.sopaId!);
     setCart(prev => [
       ...prev,
         {
@@ -61,6 +64,8 @@ export default function App() {
           sopaId: selection.sopaId!,
           caldoBaseId: selection.caldoBaseId!,
           agregadoIds: selection.agregadoIds ?? [],
+          porcionesDeseadas: qty,
+          porcionesBase: selection.porcionesBase ?? sopa?.porcionesBase,
           includeCaldoIngredients: selection.includeCaldoIngredients !== false,
           cantidad: qty
         }
@@ -92,7 +97,7 @@ export default function App() {
   };
 
   const handleUpdateCartItem = (id: string, newQty: number) => {
-    setCart(prev => prev.map(item => item.id === id ? { ...item, cantidad: newQty } : item));
+    setCart(prev => prev.map(item => item.id === id ? { ...item, cantidad: newQty, porcionesDeseadas: newQty } : item));
   };
 
   const handleRemoveCartItem = (id: string) => {

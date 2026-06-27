@@ -9,6 +9,12 @@ export interface GroupedIngredient {
 
 export type GroupedIngredients = Record<string, GroupedIngredient[]>;
 
+export interface ShoppingListData {
+  ingredientes: GroupedIngredients;
+  caldoNecesario: GroupedIngredients;
+  tandasCaldoBase: Record<string, GroupedIngredients>;
+}
+
 const UNIT_ALIASES: Record<string, string> = {
   g: 'g',
   gr: 'g',
@@ -75,8 +81,32 @@ const normalizeUnit = (unit: string) => {
   return UNIT_ALIASES[cleanedUnit] ?? cleanedUnit;
 };
 
+const getPortionCount = (value?: number) => (typeof value === 'number' && Number.isFinite(value) ? value : 1);
+
+const getRecipeFactor = (desiredPortions: number, basePortions: number) => {
+  if (!basePortions || basePortions <= 0) {
+    return 1;
+  }
+
+  return desiredPortions / basePortions;
+};
+
+const getCaldoBatchMultiplier = (porciones: string) => {
+  const match = porciones.match(/^\s*(\d+(?:[.,]\d+)?)/);
+  if (!match) {
+    return 1;
+  }
+
+  return Number(match[1].replace(',', '.')) || 1;
+};
+
+const snapQuantity = (value: number) => {
+  const rounded = Math.round(value);
+  return Math.abs(value - rounded) < 0.05 ? rounded : value;
+};
+
 const pluralizeUnit = (unit: string, quantity: number) => {
-  if (quantity === 1 || unit === 'un' || unit === 'g' || unit === 'kg' || unit === 'ml' || unit === 'cda' || unit === 'cdita') {
+  if (quantity < 1 || quantity === 1 || unit === 'un' || unit === 'g' || unit === 'kg' || unit === 'ml' || unit === 'cda' || unit === 'cdita') {
     return unit;
   }
 
@@ -100,59 +130,128 @@ const pluralizeUnit = (unit: string, quantity: number) => {
   return pluralMap[unit] ?? `${unit}s`;
 };
 
-export function getGroupedIngredients(cart: CartItem[]): GroupedIngredients {
-  const groups: Record<string, Record<string, GroupedIngredient>> = {};
+const formatQuantityText = (value: number) => {
+  if (Number.isInteger(value)) {
+    return value.toString();
+  }
 
-  const addIngredient = (categoria: string, nombre: string, cantidad: number, unidad: string) => {
-    if (!groups[categoria]) groups[categoria] = {};
+  return value.toFixed(2).replace(/\.?0+$/, '');
+};
 
-    const normalizedName = normalizeText(nombre);
-    const normalizedUnit = normalizeUnit(unidad);
-    const key = `${normalizedName}|${normalizedUnit}`;
+const toGroupedIngredients = (groups: Record<string, Record<string, GroupedIngredient>>): GroupedIngredients =>
+  Object.fromEntries(
+    Object.entries(groups).map(([categoria, items]) => [categoria, Object.values(items)])
+  );
 
-    if (!groups[categoria][key]) {
-      groups[categoria][key] = { nombre, cantidad: 0, unidad: normalizedUnit };
-    }
+const createGroupedBucket = (): Record<string, GroupedIngredient> => ({});
 
-    groups[categoria][key].cantidad += cantidad;
-  };
+const addIngredient = (
+  groups: Record<string, Record<string, GroupedIngredient>>,
+  categoria: string,
+  nombre: string,
+  cantidad: number,
+  unidad: string,
+) => {
+  if (!groups[categoria]) groups[categoria] = createGroupedBucket();
+
+  const normalizedName = normalizeText(nombre);
+  const normalizedUnit = normalizeUnit(unidad);
+  const key = `${normalizedName}|${normalizedUnit}`;
+
+  if (!groups[categoria][key]) {
+    groups[categoria][key] = { nombre, cantidad: 0, unidad: normalizedUnit };
+  }
+
+  groups[categoria][key].cantidad += cantidad;
+};
+
+export function getGroupedIngredients(cart: CartItem[]): ShoppingListData {
+  const ingredientsGroups: Record<string, Record<string, GroupedIngredient>> = {};
+  const caldoNecesarioGroups: Record<string, Record<string, GroupedIngredient>> = {};
+  const batchGroups: Record<string, Record<string, Record<string, GroupedIngredient>>> = {};
+  const batchCaldosSeen = new Set<number>();
 
   cart.forEach(item => {
     const sopa = SOPAS.find(s => s.id === item.sopaId);
     const caldoBase = CALDOS_BASE.find(c => c.id === item.caldoBaseId);
     const agregados = AGREGADOS_FAMILIARES.filter(a => item.agregadoIds.includes(a.id));
+    const desiredPortions = getPortionCount(item.porcionesDeseadas ?? item.cantidad);
+    const basePortions = getPortionCount(item.porcionesBase ?? sopa?.porcionesBase);
+    const recipeFactor = getRecipeFactor(desiredPortions, basePortions);
+    const caldoNecesario = sopa?.ingredientes.find(ing => ing.categoria === 'Preparaciones base');
 
-    sopa?.ingredientes.forEach(ing => {
-      addIngredient(ing.categoria, ing.nombre, ing.cantidad_base * item.cantidad, ing.unidad);
-    });
+    sopa?.ingredientes
+      .filter(ing => ing.categoria !== 'Preparaciones base')
+      .forEach(ing => {
+        addIngredient(ingredientsGroups, ing.categoria, ing.nombre, ing.cantidad_base * recipeFactor, ing.unidad);
+      });
 
-    if (item.includeCaldoIngredients !== false) {
-      caldoBase?.ingredientes.forEach(ing => {
-        addIngredient(ing.categoria, ing.nombre, ing.cantidad_base * item.cantidad, ing.unidad);
+    if (caldoNecesario && caldoBase) {
+      addIngredient(
+        caldoNecesarioGroups,
+        caldoNecesario.categoria,
+        caldoBase.nombre,
+        caldoNecesario.cantidad_base * recipeFactor,
+        caldoNecesario.unidad,
+      );
+    }
+
+    if (item.includeCaldoIngredients !== false && caldoBase && !batchCaldosSeen.has(caldoBase.id)) {
+      batchCaldosSeen.add(caldoBase.id);
+      batchGroups[caldoBase.nombre] = {};
+      const batchMultiplier = getCaldoBatchMultiplier(caldoBase.porciones);
+      caldoBase.ingredientes.forEach(ing => {
+        addIngredient(batchGroups[caldoBase.nombre], ing.categoria, ing.nombre, snapQuantity(ing.cantidad_base * batchMultiplier), ing.unidad);
       });
     }
 
     agregados.forEach(agregado => {
       agregado.ingredientes.forEach(ing => {
-        addIngredient(ing.categoria, ing.nombre, ing.cantidad_base * item.cantidad, ing.unidad);
+        addIngredient(ingredientsGroups, ing.categoria, ing.nombre, ing.cantidad_base * desiredPortions, ing.unidad);
       });
     });
   });
 
-  return Object.fromEntries(
-    Object.entries(groups).map(([categoria, items]) => [categoria, Object.values(items)])
-  );
+  return {
+    ingredientes: toGroupedIngredients(ingredientsGroups),
+    caldoNecesario: toGroupedIngredients(caldoNecesarioGroups),
+    tandasCaldoBase: Object.fromEntries(
+      Object.entries(batchGroups).map(([caldoNombre, groups]) => [caldoNombre, toGroupedIngredients(groups)])
+    ),
+  };
 }
 
-export function generateWhatsAppMessage(groups: GroupedIngredients): string {
+export function generateWhatsAppMessage(data: ShoppingListData): string {
   let text = "*Mi Lista de Compras - Sopas que Deshinchan*\n\n";
-  for (const [category, items] of Object.entries(groups)) {
+  for (const [category, items] of Object.entries(data.ingredientes)) {
     text += `*${category}*\n`;
-    for (const data of items) {
-      // Formatear numeros, evitar decimales largos
-      const qtyStr = Number.isInteger(data.cantidad) ? data.cantidad.toString() : data.cantidad.toFixed(2);
-      const unitLabel = pluralizeUnit(data.unidad, data.cantidad);
-      text += `- ${qtyStr} ${unitLabel} de ${data.nombre}\n`;
+    for (const item of items) {
+      const qtyStr = formatQuantityText(item.cantidad);
+      const unitLabel = pluralizeUnit(item.unidad, item.cantidad);
+      text += `- ${qtyStr} ${unitLabel} de ${item.nombre}\n`;
+    }
+    text += "\n";
+  }
+  if (Object.keys(data.caldoNecesario).length > 0) {
+    text += `*Caldo necesario para esta sopa*\n`;
+    for (const [category, items] of Object.entries(data.caldoNecesario)) {
+      for (const item of items) {
+        const qtyStr = formatQuantityText(item.cantidad);
+        const unitLabel = pluralizeUnit(item.unidad, item.cantidad);
+        text += `- ${qtyStr} ${unitLabel} de ${item.nombre}\n`;
+      }
+      if (category) text += "\n";
+    }
+  }
+  for (const [caldoNombre, sections] of Object.entries(data.tandasCaldoBase)) {
+    text += `*Para preparar una tanda completa de caldo base: ${caldoNombre}*\n`;
+    for (const [category, items] of Object.entries(sections)) {
+      text += `_${category}_\n`;
+      for (const item of items) {
+        const qtyStr = formatQuantityText(item.cantidad);
+        const unitLabel = pluralizeUnit(item.unidad, item.cantidad);
+        text += `- ${qtyStr} ${unitLabel} de ${item.nombre}\n`;
+      }
     }
     text += "\n";
   }
@@ -167,16 +266,25 @@ export const formatearMedida = (valor: number, unidad: string): string => {
     "0.75": "3/4"
   };
 
-  // Convertimos a string y redondeamos para evitar errores de precisión
   const valStr = valor.toFixed(2).replace(/\.?0+$/, "");
-  const fraccion = fracciones[valStr] || valor.toString();
+  const fraccion = fracciones[valStr] || formatQuantityText(valor);
 
   if (unidad === 'taza') {
     return `${fraccion} ${pluralizeUnit(unidad, valor)}`;
   }
   if (unidad === 'un') {
-    return `${fraccion}`;
+    return `${fraccion} ${valor === 1 ? 'unidad' : 'unidades'}`;
   }
 
   return `${fraccion} ${pluralizeUnit(unidad, valor)}`;
+};
+
+export const formatPortionFactor = (desiredPortions: number, basePortions: number): string => {
+  if (!basePortions || basePortions <= 0) {
+    return 'x1';
+  }
+
+  const factor = desiredPortions / basePortions;
+  const factorStr = Number.isInteger(factor) ? factor.toString() : factor.toFixed(2).replace(/\.?0+$/, '');
+  return `x${factorStr}`;
 };

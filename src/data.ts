@@ -415,6 +415,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Termogénicas',
     caldo_base_sugerido_id: 1,
     porciones: '3 a 4',
+    porcionesBase: 4,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Zapallo anco mediano pelado y en cubos', cantidad_base: 0.5, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Cebolla grande', cantidad_base: 1, unidad: 'un' },
@@ -441,6 +442,7 @@ export const SOPAS: Sopa[] = [
     caldo_base_sugerido_id: 2,
     notaCaldoBase: 'La receta permite caldo base de hueso o vegetales; se recomienda el primero mencionado.',
     porciones: '4',
+    porcionesBase: 4,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Repollo blanco chico en tiritas finas', cantidad_base: 0.5, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Cebolla de verdeo', cantidad_base: 2, unidad: 'ramas' },
@@ -464,6 +466,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Termogénicas',
     caldo_base_sugerido_id: 1,
     porciones: '2 a 3',
+    porcionesBase: 3,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Tomates perita maduros cubeteados', cantidad_base: 4, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Morrón rojo', cantidad_base: 0.5, unidad: 'un' },
@@ -487,6 +490,7 @@ export const SOPAS: Sopa[] = [
     caldo_base_sugerido_id: 1,
     notaCaldoBase: 'La receta permite caldo base de vegetales o caldo funcional deshinchante; se recomienda el primero mencionado.',
     porciones: '3 a 4',
+    porcionesBase: 4,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Espinaca lavada', cantidad_base: 1, unidad: 'atado grande' },
       { categoria: 'Verdulería', nombre: 'Zapallitos verdes medianos en cubos', cantidad_base: 2, unidad: 'un' },
@@ -510,6 +514,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Termogénicas',
     caldo_base_sugerido_id: 1,
     porciones: '3',
+    porcionesBase: 3,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Zanahorias grandes en rueditas', cantidad_base: 4, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Cebolla', cantidad_base: 1, unidad: 'un' },
@@ -532,6 +537,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Termogénicas',
     caldo_base_sugerido_id: 2,
     porciones: '2',
+    porcionesBase: 2,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Ajo', cantidad_base: 1, unidad: 'cabeza' },
       { categoria: 'Verdulería', nombre: 'Cebolla de verdeo', cantidad_base: 2, unidad: 'ramas' },
@@ -553,6 +559,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Termogénicas',
     caldo_base_sugerido_id: 1,
     porciones: '4',
+    porcionesBase: 4,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Coliflor chica separada en arbolitos', cantidad_base: 1, unidad: 'planta' },
       { categoria: 'Verdulería', nombre: 'Puerro grande', cantidad_base: 1, unidad: 'un' },
@@ -575,6 +582,7 @@ export const SOPAS: Sopa[] = [
     caldo_base_sugerido_id: 2,
     notaCaldoBase: 'La receta permite caldo base de hueso o de vegetales; se recomienda el primero mencionado.',
     porciones: '3',
+    porcionesBase: 3,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Morrones rojos grandes', cantidad_base: 2, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Cebolla blanca', cantidad_base: 1, unidad: 'un' },
@@ -596,6 +604,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Termogénicas',
     caldo_base_sugerido_id: 3,
     porciones: '2',
+    porcionesBase: 2,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Jengibre rallado', cantidad_base: 1, unidad: 'cda' },
       { categoria: 'Verdulería', nombre: 'Limón fresco', cantidad_base: 1, unidad: 'un' },
@@ -617,6 +626,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Termogénicas',
     caldo_base_sugerido_id: 1,
     porciones: '4',
+    porcionesBase: 4,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Brócoli', cantidad_base: 1, unidad: 'planta' },
       { categoria: 'Verdulería', nombre: 'Cebolla blanca', cantidad_base: 1, unidad: 'un' },
@@ -638,6 +648,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Termogénicas',
     caldo_base_sugerido_id: 4,
     porciones: '3',
+    porcionesBase: 3,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Zapallitos verdes en cubos', cantidad_base: 4, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Cebollas moradas picadas', cantidad_base: 2, unidad: 'un' },
@@ -659,6 +670,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Termogénicas',
     caldo_base_sugerido_id: 1,
     porciones: '3',
+    porcionesBase: 3,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Apio lavado y picado', cantidad_base: 1, unidad: 'planta' },
       { categoria: 'Verdulería', nombre: 'Cebolla', cantidad_base: 1, unidad: 'un' },
@@ -681,6 +693,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Termogénicas',
     caldo_base_sugerido_id: 2,
     porciones: '2 a 3',
+    porcionesBase: 3,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Chauchas frescas lavadas y cortadas', cantidad_base: 400, unidad: 'g' },
       { categoria: 'Verdulería', nombre: 'Ajo en láminas finas', cantidad_base: 3, unidad: 'dientes' },
@@ -701,6 +714,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Termogénicas',
     caldo_base_sugerido_id: 1,
     porciones: '3',
+    porcionesBase: 3,
     ingredientes: [
       { categoria: 'Almacén', nombre: 'Tomates perita en lata', cantidad_base: 1, unidad: 'lata' },
       { categoria: 'Verdulería', nombre: 'Ajo pelado', cantidad_base: 4, unidad: 'dientes' },
@@ -723,6 +737,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Termogénicas',
     caldo_base_sugerido_id: 1,
     porciones: '4',
+    porcionesBase: 4,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Puerros grandes picados', cantidad_base: 4, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Jengibre fresco', cantidad_base: 1, unidad: 'rodaja fina' },
@@ -744,6 +759,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Saciantes',
     caldo_base_sugerido_id: 1,
     porciones: '4',
+    porcionesBase: 4,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Zapallo anco grande pelado y en cubos gruesos', cantidad_base: 0.5, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Zanahorias grandes en rueditas', cantidad_base: 3, unidad: 'un' },
@@ -768,6 +784,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Saciantes',
     caldo_base_sugerido_id: 2,
     porciones: '3',
+    porcionesBase: 3,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Repollo blanco en tiritas', cantidad_base: 0.5, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Champiñones frescos fileteados', cantidad_base: 200, unidad: 'g' },
@@ -789,6 +806,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Saciantes',
     caldo_base_sugerido_id: 1,
     porciones: '4',
+    porcionesBase: 4,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Coliflor grande separada en flores', cantidad_base: 1, unidad: 'planta' },
       { categoria: 'Verdulería', nombre: 'Ajo asado', cantidad_base: 1, unidad: 'cabeza' },
@@ -810,6 +828,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Saciantes',
     caldo_base_sugerido_id: 4,
     porciones: '4',
+    porcionesBase: 4,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Acelga grande lavada sin pencas duras', cantidad_base: 1, unidad: 'atado' },
       { categoria: 'Verdulería', nombre: 'Puerros grandes', cantidad_base: 2, unidad: 'un' },
@@ -831,6 +850,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Saciantes',
     caldo_base_sugerido_id: 1,
     porciones: '3',
+    porcionesBase: 3,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Berenjenas medianas', cantidad_base: 2, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Tomates perita maduros', cantidad_base: 3, unidad: 'un' },
@@ -852,6 +872,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Saciantes',
     caldo_base_sugerido_id: 1,
     porciones: '4',
+    porcionesBase: 4,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Zapallo anco pelado y en cubos', cantidad_base: 0.5, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Espinaca fresca lavada', cantidad_base: 1, unidad: 'atado' },
@@ -872,6 +893,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Saciantes',
     caldo_base_sugerido_id: 2,
     porciones: '3',
+    porcionesBase: 3,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Repollo morado en tiras muy finas', cantidad_base: 0.5, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Cebollas moradas grandes en pluma', cantidad_base: 2, unidad: 'un' },
@@ -892,6 +914,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Saciantes',
     caldo_base_sugerido_id: 1,
     porciones: '4',
+    porcionesBase: 4,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Brócoli', cantidad_base: 1, unidad: 'planta' },
       { categoria: 'Verdulería', nombre: 'Zanahorias grandes cortadas finitas', cantidad_base: 3, unidad: 'un' },
@@ -912,6 +935,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Saciantes',
     caldo_base_sugerido_id: 2,
     porciones: '2',
+    porcionesBase: 2,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Zapallitos verdes firmes', cantidad_base: 3, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Cebolla chica', cantidad_base: 1, unidad: 'un' },
@@ -931,6 +955,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Saciantes',
     caldo_base_sugerido_id: 1,
     porciones: '4',
+    porcionesBase: 4,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Puerros grandes en rueditas', cantidad_base: 4, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Coliflor en arbolitos', cantidad_base: 0.5, unidad: 'planta' },
@@ -951,6 +976,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Saciantes',
     caldo_base_sugerido_id: 1,
     porciones: '3',
+    porcionesBase: 3,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Morrones rojos grandes asados y pelados', cantidad_base: 2, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Tomates perita en cubos grandes', cantidad_base: 4, unidad: 'un' },
@@ -971,6 +997,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Saciantes',
     caldo_base_sugerido_id: 1,
     porciones: '4',
+    porcionesBase: 4,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Zapallo cabutia grande', cantidad_base: 0.5, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Cebollas blancas', cantidad_base: 2, unidad: 'un' },
@@ -992,6 +1019,7 @@ export const SOPAS: Sopa[] = [
     caldo_base_sugerido_id: 2,
     notaCaldoBase: 'La receta permite caldo base de hueso o vegetales; se recomienda el primero mencionado.',
     porciones: '2',
+    porcionesBase: 2,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Champiñones frescos', cantidad_base: 200, unidad: 'g' },
       { categoria: 'Verdulería', nombre: 'Espinaca fresca', cantidad_base: 1, unidad: 'atado' },
@@ -1012,6 +1040,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Saciantes',
     caldo_base_sugerido_id: 4,
     porciones: '3',
+    porcionesBase: 3,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Zanahorias grandes en ruedas', cantidad_base: 4, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Apio bien picado', cantidad_base: 4, unidad: 'ramas' },
@@ -1032,6 +1061,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Saciantes',
     caldo_base_sugerido_id: 1,
     porciones: '4',
+    porcionesBase: 4,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Zapallitos verdes en cubos', cantidad_base: 4, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Repollo blanco en tiritas', cantidad_base: 0.5, unidad: 'un' },
@@ -1053,6 +1083,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Deshinchantes',
     caldo_base_sugerido_id: 4,
     porciones: '4',
+    porcionesBase: 4,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Apio lavado y picado', cantidad_base: 1, unidad: 'planta' },
       { categoria: 'Verdulería', nombre: 'Zapallitos verdes en cubos', cantidad_base: 4, unidad: 'un' },
@@ -1074,6 +1105,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Deshinchantes',
     caldo_base_sugerido_id: 1,
     porciones: '2',
+    porcionesBase: 2,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Puerros grandes en rueditas muy finas', cantidad_base: 3, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Perejil fresco', cantidad_base: 1, unidad: 'puñado grande' },
@@ -1093,6 +1125,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Deshinchantes',
     caldo_base_sugerido_id: 1,
     porciones: '3',
+    porcionesBase: 3,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Tomates perita maduros pelados y sin semillas', cantidad_base: 5, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Ajo', cantidad_base: 1, unidad: 'diente' },
@@ -1114,6 +1147,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Deshinchantes',
     caldo_base_sugerido_id: 4,
     porciones: '3',
+    porcionesBase: 3,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Zanahorias medianas en rodajas finas', cantidad_base: 4, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Cebolla de verdeo', cantidad_base: 1, unidad: 'un' },
@@ -1134,6 +1168,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Deshinchantes',
     caldo_base_sugerido_id: 3,
     porciones: '2',
+    porcionesBase: 2,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Acelga lavada (solo hojas verdes)', cantidad_base: 1, unidad: 'atado' },
       { categoria: 'Verdulería', nombre: 'Ajo picado', cantidad_base: 1, unidad: 'diente' },
@@ -1154,6 +1189,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Deshinchantes',
     caldo_base_sugerido_id: 1,
     porciones: '3',
+    porcionesBase: 3,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Cebollas blancas grandes en pluma', cantidad_base: 4, unidad: 'un' },
       { categoria: 'Almacén', nombre: 'Tomillo seco', cantidad_base: 1, unidad: 'cdita' },
@@ -1173,6 +1209,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Deshinchantes',
     caldo_base_sugerido_id: 1,
     porciones: '4',
+    porcionesBase: 4,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Espinaca fresca (solo hojas)', cantidad_base: 2, unidad: 'atados' },
       { categoria: 'Verdulería', nombre: 'Puerros grandes picados', cantidad_base: 2, unidad: 'un' },
@@ -1193,6 +1230,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Deshinchantes',
     caldo_base_sugerido_id: 1,
     porciones: '2',
+    porcionesBase: 2,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Ajo asado al horno', cantidad_base: 1, unidad: 'cabeza' },
       { categoria: 'Almacén', nombre: 'Cúrcuma en polvo', cantidad_base: 1, unidad: 'cdita generosa' },
@@ -1213,6 +1251,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Deshinchantes',
     caldo_base_sugerido_id: 4,
     porciones: '3',
+    porcionesBase: 3,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Cebolla de verdeo picada fina', cantidad_base: 4, unidad: 'ramas' },
       { categoria: 'Verdulería', nombre: 'Zanahorias medianas ralladas finitas', cantidad_base: 3, unidad: 'un' },
@@ -1233,6 +1272,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Deshinchantes',
     caldo_base_sugerido_id: 1,
     porciones: '4',
+    porcionesBase: 4,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Zapallo anco pelado en cubitos chiquitos', cantidad_base: 0.25, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Cebolla chica', cantidad_base: 1, unidad: 'un' },
@@ -1253,6 +1293,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Deshinchantes',
     caldo_base_sugerido_id: 1,
     porciones: '3',
+    porcionesBase: 3,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Apio picado', cantidad_base: 1, unidad: 'planta' },
       { categoria: 'Verdulería', nombre: 'Jengibre fresco', cantidad_base: 1, unidad: 'rodaja grande' },
@@ -1272,6 +1313,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Deshinchantes',
     caldo_base_sugerido_id: 4,
     porciones: '3',
+    porcionesBase: 3,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Repollo blanco en tiras extremadamente finas', cantidad_base: 0.25, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Cebolla blanca', cantidad_base: 1, unidad: 'un' },
@@ -1291,6 +1333,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Deshinchantes',
     caldo_base_sugerido_id: 1,
     porciones: '3',
+    porcionesBase: 3,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Zapallitos verdes en cubos grandes', cantidad_base: 5, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Cebolla', cantidad_base: 1, unidad: 'un' },
@@ -1312,6 +1355,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Deshinchantes',
     caldo_base_sugerido_id: 2,
     porciones: '2',
+    porcionesBase: 2,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Flores de brócoli muy chiquitas', cantidad_base: 1, unidad: 'taza' },
       { categoria: 'Verdulería', nombre: 'Ajo', cantidad_base: 1, unidad: 'diente' },
@@ -1331,6 +1375,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Deshinchantes',
     caldo_base_sugerido_id: 4,
     porciones: '3',
+    porcionesBase: 3,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Tomates perita maduros pelados y picados', cantidad_base: 3, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Apio picado bien chiquito', cantidad_base: 3, unidad: 'ramas' },
@@ -1351,6 +1396,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Cremosas Livianas',
     caldo_base_sugerido_id: 1,
     porciones: '4',
+    porcionesBase: 4,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Zapallo anco pelado y en cubos', cantidad_base: 0.5, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Granos de choclo amarillo', cantidad_base: 1, unidad: 'taza' },
@@ -1372,6 +1418,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Cremosas Livianas',
     caldo_base_sugerido_id: 1,
     porciones: '3',
+    porcionesBase: 3,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Zanahorias grandes en rueditas', cantidad_base: 5, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Cebolla blanca grande', cantidad_base: 1, unidad: 'un' },
@@ -1393,6 +1440,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Cremosas Livianas',
     caldo_base_sugerido_id: 1,
     porciones: '4',
+    porcionesBase: 4,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Coliflor grande separada en flores chicas', cantidad_base: 1, unidad: 'planta' },
       { categoria: 'Verdulería', nombre: 'Puerros picados', cantidad_base: 2, unidad: 'un' },
@@ -1414,6 +1462,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Cremosas Livianas',
     caldo_base_sugerido_id: 2,
     porciones: '4',
+    porcionesBase: 4,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Zapallo cabutia pelado y en cubos', cantidad_base: 0.5, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Puerros grandes en rueditas', cantidad_base: 3, unidad: 'un' },
@@ -1434,6 +1483,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Cremosas Livianas',
     caldo_base_sugerido_id: 1,
     porciones: '3',
+    porcionesBase: 3,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Arvejas', cantidad_base: 2, unidad: 'tazas' },
       { categoria: 'Verdulería', nombre: 'Cebolla de verdeo', cantidad_base: 1, unidad: 'un' },
@@ -1455,6 +1505,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Cremosas Livianas',
     caldo_base_sugerido_id: 2,
     porciones: '3',
+    porcionesBase: 3,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Champiñones o portobellos frescos', cantidad_base: 400, unidad: 'g' },
       { categoria: 'Verdulería', nombre: 'Cebolla de verdeo picada fina', cantidad_base: 3, unidad: 'ramas' },
@@ -1476,6 +1527,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Cremosas Livianas',
     caldo_base_sugerido_id: 1,
     porciones: '4',
+    porcionesBase: 4,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Zapallitos verdes en cubos', cantidad_base: 6, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Cebolla blanca', cantidad_base: 1, unidad: 'un' },
@@ -1497,6 +1549,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Cremosas Livianas',
     caldo_base_sugerido_id: 1,
     porciones: '3',
+    porcionesBase: 3,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Tomates perita maduros cubeteados', cantidad_base: 4, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Zanahorias grandes ralladas', cantidad_base: 2, unidad: 'un' },
@@ -1518,6 +1571,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Cremosas Livianas',
     caldo_base_sugerido_id: 1,
     porciones: '4',
+    porcionesBase: 4,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Brócoli en arbolitos', cantidad_base: 0.5, unidad: 'planta' },
       { categoria: 'Verdulería', nombre: 'Coliflor en arbolitos', cantidad_base: 0.5, unidad: 'planta' },
@@ -1539,6 +1593,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Cremosas Livianas',
     caldo_base_sugerido_id: 2,
     porciones: '4',
+    porcionesBase: 4,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Espinaca fresca lavada sin tallos duros', cantidad_base: 2, unidad: 'atados' },
       { categoria: 'Verdulería', nombre: 'Puerros grandes en rodajitas finas', cantidad_base: 3, unidad: 'un' },
@@ -1559,6 +1614,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Cremosas Livianas',
     caldo_base_sugerido_id: 1,
     porciones: '3',
+    porcionesBase: 3,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Remolacha chica pelada en cubitos', cantidad_base: 1, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Zanahorias en rueditas', cantidad_base: 3, unidad: 'un' },
@@ -1580,6 +1636,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Cremosas Livianas',
     caldo_base_sugerido_id: 1,
     porciones: '3',
+    porcionesBase: 3,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Zapallo anco en cubos', cantidad_base: 0.5, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Ajo asado', cantidad_base: 1, unidad: 'cabeza' },
@@ -1601,6 +1658,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Cremosas Livianas',
     caldo_base_sugerido_id: 2,
     porciones: '3',
+    porcionesBase: 3,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Morrón rojo grande asado', cantidad_base: 1, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Zapallo anco en cubos', cantidad_base: 0.5, unidad: 'un' },
@@ -1622,6 +1680,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Cremosas Livianas',
     caldo_base_sugerido_id: 1,
     porciones: '3',
+    porcionesBase: 3,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Puerros grandes picados', cantidad_base: 2, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Apio picado fino', cantidad_base: 3, unidad: 'ramas' },
@@ -1643,6 +1702,7 @@ export const SOPAS: Sopa[] = [
     categoria_sopa: 'Cremosas Livianas',
     caldo_base_sugerido_id: 1,
     porciones: '4',
+    porcionesBase: 4,
     ingredientes: [
       { categoria: 'Verdulería', nombre: 'Repollo blanco cortado en tiras', cantidad_base: 0.5, unidad: 'un' },
       { categoria: 'Verdulería', nombre: 'Puerros grandes picados', cantidad_base: 2, unidad: 'un' },

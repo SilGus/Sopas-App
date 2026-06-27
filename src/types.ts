@@ -16,6 +16,7 @@ export interface Sopa {
   nombre: string;
   subtitulo?: string;
   categoria_sopa: string;
+  porcionesBase: number;
   caldo_base_sugerido_id: number;
   notaCaldoBase?: string;
   porciones: string;
@@ -51,6 +52,8 @@ export interface CartItem {
   sopaId: number;
   caldoBaseId: number;
   agregadoIds: number[];
+  porcionesDeseadas?: number;
+  porcionesBase?: number;
   includeCaldoIngredients?: boolean;
   cantidad: number;
 }
