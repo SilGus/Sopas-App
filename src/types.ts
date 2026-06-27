@@ -12,11 +12,16 @@ export interface PasoPreparacion {
 
 export interface Sopa {
   id: number;
+  numero: string;
   nombre: string;
+  subtitulo?: string;
   categoria_sopa: string;
   caldo_base_sugerido_id: number;
+  notaCaldoBase?: string;
+  porciones: string;
   ingredientes: Ingrediente[];
   pasos_preparacion: PasoPreparacion[];
+  tip?: string;
 }
 
 export interface CaldoBase {

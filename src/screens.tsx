@@ -123,11 +123,14 @@ export function Catalogo({ onSelect, onBottomNav }: { onSelect: (id: number) => 
             {filteredSopas.map(s => (
               <div key={s.id} onClick={() => onSelect(s.id)} className="bg-[#f0ede4] rounded-xl p-4 flex items-center gap-4 border border-outline-variant custom-shadow cursor-pointer hover:border-primary transition-all group">
                 <div className="w-14 h-14 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-display-sm font-bold shrink-0 shadow-sm border-2 border-white group-hover:scale-105 transition-transform">
-                  #{s.id}
+                  #{s.numero}
                 </div>
                 <div className="flex-1 min-w-0">
                   <span className="text-secondary font-label-sm text-label-sm uppercase tracking-wider">{s.categoria_sopa}</span>
                   <h3 className="font-headline-md text-headline-md text-on-surface leading-tight mt-0.5 mb-1">{s.nombre}</h3>
+                  {s.subtitulo && (
+                    <p className="font-label-md text-label-md text-primary mb-1">{s.subtitulo}</p>
+                  )}
                   <p className="font-body-md text-body-md text-on-surface-variant">
                     {s.ingredientes.map(i => i.nombre).join(', ')}
                   </p>
@@ -175,6 +178,10 @@ export function CaldoBaseScreen({ sopaId, onConfirm, onBack }: { sopaId: number;
             <div className="flex flex-col">
               <span className="text-on-surface-variant font-label-md text-label-md">Sopa seleccionada</span>
               <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">{sopa.nombre}</h2>
+              {sopa.subtitulo && (
+                <span className="text-secondary font-label-md text-label-md mt-1">{sopa.subtitulo}</span>
+              )}
+              <span className="text-on-surface-variant font-body-md text-body-md mt-1">{sopa.porciones}</span>
             </div>
           </div>
         </section>
@@ -285,6 +292,9 @@ export function Porciones({ sopaId, caldoBaseId, onConfirm, onBack }: { sopaId: 
       <main className="flex-grow flex flex-col items-center justify-center px-margin-mobile max-w-md mx-auto w-full text-center">
         <h2 className="font-display-lg-mobile text-display-lg-mobile text-on-background mb-2">{sopa.nombre}</h2>
         <p className="font-body-md text-body-md text-on-surface-variant mb-2">Caldo base: {caldoBase.nombre}</p>
+        {sopa.notaCaldoBase && (
+          <p className="font-body-md text-body-md text-on-surface-variant mb-2">{sopa.notaCaldoBase}</p>
+        )}
         <p className="font-body-lg text-body-lg text-on-surface-variant mb-12">¿Cuántas porciones quieres preparar?</p>
 
         <div className="flex items-center justify-center gap-8 bg-[#f0ede4] rounded-full p-2 border border-outline-variant shadow-sm w-full">
@@ -572,6 +582,12 @@ export function ModoCocina({ cart, onBack, onFinishClear, onBottomNav, onGoCatal
                       );
                     })}
                   </div>
+                  {sopa.tip && (
+                    <div className="mt-4 p-6 rounded-xl border border-outline-variant shadow-sm bg-[#f0ede4]">
+                      <h5 className="font-label-lg text-label-lg mb-1">Tip</h5>
+                      <p className="font-body-lg text-body-lg text-on-background">{sopa.tip}</p>
+                    </div>
+                  )}
                 </div>
               ))}
             </section>
