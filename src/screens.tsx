@@ -8,15 +8,13 @@ import {
   formatBatchFactor,
   formatEstimatedYield,
   formatTandasLabel,
+  formatYieldText,
   getAgregadosSeleccionados,
   getTandasCaldo,
   getTandasSopa,
 } from './utils';
 
 // --- Components ---
-
-const formatYieldText = (porciones: string) =>
-  /\bporciones?\b/i.test(porciones) ? porciones : `${porciones} porciones`;
 
 function BottomNav({ active, onNavigate }: { active: string; onNavigate: (s: string) => void }) {
   const items = [
@@ -529,7 +527,7 @@ export function ListaCompras({ cart, goModoCocina, goInicio, onBottomNav, onUpda
   const groups = getGroupedIngredients(cart);
 
   const handleWhatsApp = () => {
-    const text = generateWhatsAppMessage(groups);
+    const text = generateWhatsAppMessage(groups, cart);
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
   };
 
@@ -564,6 +562,7 @@ export function ListaCompras({ cart, goModoCocina, goInicio, onBottomNav, onUpda
                       const includeCaldoIngredients = item.includeCaldoIngredients !== false;
                       const tandasSopa = getTandasSopa(item, sopa);
                       const tandasCaldo = getTandasCaldo(item);
+                      const tandasCaldoCompletas = tandasCaldo === 1 ? 'completa' : 'completas';
                       const isLegacyPortionItem = item.tandasSopa === undefined && item.porcionesDeseadas !== undefined;
                       const caldoRecomendado = sopa ? CALDOS_BASE.find(x => x.id === sopa.caldo_base_sugerido_id) : undefined;
                       const reemplazaRecomendado = !!caldoRecomendado && !!caldoBase && caldoRecomendado.id !== caldoBase.id;
@@ -576,14 +575,20 @@ export function ListaCompras({ cart, goModoCocina, goInicio, onBottomNav, onUpda
                                 <span className="truncate text-on-surface">{sopa?.nombre}</span>
                               </div>
                               <span className="pl-3.5 text-body-md">
-                                Cada tanda rinde: {formatYieldText(sopa?.porciones ?? '')} según el ebook
+                                Sopa: {sopa?.nombre}
                               </span>
                               <span className="pl-3.5 text-body-md">
-                                Vas a preparar {formatTandasLabel(tandasSopa)}
+                                Categoría: {sopa?.categoria_sopa}
+                              </span>
+                              <span className="pl-3.5 text-body-md">
+                                Rinde según ebook: {formatYieldText(sopa?.porciones ?? '')} por tanda
+                              </span>
+                              <span className="pl-3.5 text-body-md">
+                                Tandas de sopa: {formatTandasLabel(tandasSopa)}
                               </span>
                               {sopa && (
                                 <span className="pl-3.5 text-body-md">
-                                  Resultado estimado: {formatYieldText(formatEstimatedYield(sopa.porciones, tandasSopa))}
+                                  Vas a preparar: {formatTandasLabel(tandasSopa)} = {formatYieldText(formatEstimatedYield(sopa.porciones, tandasSopa))} estimadas
                                 </span>
                               )}
                               {isLegacyPortionItem && (
@@ -591,6 +596,9 @@ export function ListaCompras({ cart, goModoCocina, goInicio, onBottomNav, onUpda
                                   Lista anterior: se conserva el ajuste equivalente guardado
                                 </span>
                               )}
+                              <span className="pl-3.5 text-body-md">
+                                Caldo recomendado: {caldoRecomendado?.nombre}
+                              </span>
                               <span className="pl-3.5 text-body-md">
                                 Caldo seleccionado: {caldoBase?.nombre}
                               </span>
@@ -600,10 +608,15 @@ export function ListaCompras({ cart, goModoCocina, goInicio, onBottomNav, onUpda
                                 </span>
                               )}
                               <span className="pl-3.5 text-body-md">
-                                {includeCaldoIngredients ? `Preparar ${formatTandasLabel(tandasCaldo)} de caldo completo` : 'Ya tengo caldo preparado'}
+                                Estado del caldo: {includeCaldoIngredients ? 'a preparar' : 'ya preparado'}
                               </span>
+                              {includeCaldoIngredients && (
+                                <span className="pl-3.5 text-body-md">
+                                  Tandas de caldo: {formatTandasLabel(tandasCaldo)} {tandasCaldoCompletas}
+                                </span>
+                              )}
                               <span className="pl-3.5 text-body-md">
-                                Ingredientes de sopa: {formatBatchFactor(tandasSopa)}
+                                Ingredientes de sopa: receta original {formatBatchFactor(tandasSopa)}
                               </span>
                               {agregadosSeleccionados.length > 0 && (
                                 <span className="pl-3.5 text-body-md">
@@ -674,59 +687,36 @@ export function ListaCompras({ cart, goModoCocina, goInicio, onBottomNav, onUpda
           </section>
         )}
 
-        {Object.entries(groups.ingredientes).map(([catName, items]) => (
-          <section key={catName} className="space-y-stack-md">
-            <div className="flex items-center gap-3 border-b border-surface-variant pb-2">
-              <span className="material-symbols-outlined text-secondary icon-fill">nutrition</span>
-              <h3 className="font-headline-lg text-headline-lg text-on-surface">{catName}</h3>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {items.map(data => (
-                <label key={`${data.nombre}-${data.unidad}`} className="glass-card rounded-xl p-4 flex items-center gap-4 cursor-pointer active:scale-[0.98] transition-transform has-[:checked]:bg-surface-container-low has-[:checked]:opacity-50">
-                  <input className="checkbox-custom sr-only peer" type="checkbox" />
-                  <div className="w-8 h-8 rounded border-2 border-outline flex items-center justify-center transition-colors duration-200 shrink-0 bg-surface-container-lowest peer-checked:bg-primary peer-checked:border-primary">
-                    <span className="material-symbols-outlined text-on-primary text-[20px] opacity-0 scale-50 transition-all duration-200 peer-checked:opacity-100 peer-checked:scale-100 icon-fill">check</span>
-                  </div>
-                  <div className="flex-1 flex items-start gap-4 peer-checked:line-through">
-                    <span className="font-label-lg text-primary text-left whitespace-nowrap w-20 shrink-0">
-                      {formatearMedida(data.cantidad, data.unidad)}
-                    </span>
-                    <span className="font-body-lg text-on-surface text-left break-words flex-1 leading-tight mt-[1px]">
-                      {data.nombre}
-                    </span>
-                  </div>
-                </label>
-              ))}
-            </div>
-          </section>
-        ))}
-
-        {Object.keys(groups.agregadosFamiliares).length > 0 && (
+        {Object.keys(groups.ingredientes).length > 0 && (
           <section className="space-y-stack-md">
             <div className="flex items-center gap-3 border-b border-surface-variant pb-2">
-              <span className="material-symbols-outlined text-secondary icon-fill">add_circle</span>
-              <h3 className="font-headline-lg text-headline-lg text-on-surface">Agregados familiares</h3>
+              <span className="material-symbols-outlined text-secondary icon-fill">nutrition</span>
+              <h3 className="font-headline-lg text-headline-lg text-on-surface">Ingredientes de la sopa</h3>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {Object.entries(groups.agregadosFamiliares).map(([catName, items]) => (
-                items.map(data => (
-                  <label key={`${catName}-${data.nombre}-${data.unidad}`} className="glass-card rounded-xl p-4 flex items-center gap-4 cursor-pointer active:scale-[0.98] transition-transform has-[:checked]:bg-surface-container-low has-[:checked]:opacity-50">
-                    <input className="checkbox-custom sr-only peer" type="checkbox" />
-                    <div className="w-8 h-8 rounded border-2 border-outline flex items-center justify-center transition-colors duration-200 shrink-0 bg-surface-container-lowest peer-checked:bg-primary peer-checked:border-primary">
-                      <span className="material-symbols-outlined text-on-primary text-[20px] opacity-0 scale-50 transition-all duration-200 peer-checked:opacity-100 peer-checked:scale-100 icon-fill">check</span>
-                    </div>
-                    <div className="flex-1 flex items-start gap-4 peer-checked:line-through">
-                      <span className="font-label-lg text-primary text-left whitespace-nowrap w-20 shrink-0">
-                        {formatearMedida(data.cantidad, data.unidad)}
-                      </span>
-                      <span className="font-body-lg text-on-surface text-left break-words flex-1 leading-tight mt-[1px]">
-                        {data.nombre}
-                      </span>
-                    </div>
-                  </label>
-                ))
+            <div className="space-y-6">
+              {Object.entries(groups.ingredientes).map(([catName, items]) => (
+                <div key={catName} className="space-y-3">
+                  <h4 className="font-headline-md text-primary">{catName}</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {items.map(data => (
+                      <label key={`${data.nombre}-${data.unidad}`} className="glass-card rounded-xl p-4 flex items-center gap-4 cursor-pointer active:scale-[0.98] transition-transform has-[:checked]:bg-surface-container-low has-[:checked]:opacity-50">
+                        <input className="checkbox-custom sr-only peer" type="checkbox" />
+                        <div className="w-8 h-8 rounded border-2 border-outline flex items-center justify-center transition-colors duration-200 shrink-0 bg-surface-container-lowest peer-checked:bg-primary peer-checked:border-primary">
+                          <span className="material-symbols-outlined text-on-primary text-[20px] opacity-0 scale-50 transition-all duration-200 peer-checked:opacity-100 peer-checked:scale-100 icon-fill">check</span>
+                        </div>
+                        <div className="flex-1 flex items-start gap-4 peer-checked:line-through">
+                          <span className="font-label-lg text-primary text-left whitespace-nowrap w-20 shrink-0">
+                            {formatearMedida(data.cantidad, data.unidad)}
+                          </span>
+                          <span className="font-body-lg text-on-surface text-left break-words flex-1 leading-tight mt-[1px]">
+                            {data.nombre}
+                          </span>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           </section>
@@ -764,6 +754,36 @@ export function ListaCompras({ cart, goModoCocina, goInicio, onBottomNav, onUpda
                     ))}
                   </div>
                 </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {Object.keys(groups.agregadosFamiliares).length > 0 && (
+          <section className="space-y-stack-md">
+            <div className="flex items-center gap-3 border-b border-surface-variant pb-2">
+              <span className="material-symbols-outlined text-secondary icon-fill">add_circle</span>
+              <h3 className="font-headline-lg text-headline-lg text-on-surface">Agregados familiares</h3>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {Object.entries(groups.agregadosFamiliares).map(([catName, items]) => (
+                items.map(data => (
+                  <label key={`${catName}-${data.nombre}-${data.unidad}`} className="glass-card rounded-xl p-4 flex items-center gap-4 cursor-pointer active:scale-[0.98] transition-transform has-[:checked]:bg-surface-container-low has-[:checked]:opacity-50">
+                    <input className="checkbox-custom sr-only peer" type="checkbox" />
+                    <div className="w-8 h-8 rounded border-2 border-outline flex items-center justify-center transition-colors duration-200 shrink-0 bg-surface-container-lowest peer-checked:bg-primary peer-checked:border-primary">
+                      <span className="material-symbols-outlined text-on-primary text-[20px] opacity-0 scale-50 transition-all duration-200 peer-checked:opacity-100 peer-checked:scale-100 icon-fill">check</span>
+                    </div>
+                    <div className="flex-1 flex items-start gap-4 peer-checked:line-through">
+                      <span className="font-label-lg text-primary text-left whitespace-nowrap w-20 shrink-0">
+                        {formatearMedida(data.cantidad, data.unidad)}
+                      </span>
+                      <span className="font-body-lg text-on-surface text-left break-words flex-1 leading-tight mt-[1px]">
+                        {data.nombre}
+                      </span>
+                    </div>
+                  </label>
+                ))
               ))}
             </div>
           </section>
@@ -839,8 +859,8 @@ export function ModoCocina({ cart, onBack, onFinishClear, onBottomNav, onGoCatal
             <div className="mb-stack-lg border-b-2 border-surface-variant pb-stack-md">
               <span className="inline-block px-4 py-1 bg-secondary-container text-on-secondary-container rounded-full font-label-md text-label-md mb-stack-sm">Preparación</span>
               <h2 className="font-display-lg text-display-lg text-primary mb-stack-sm">Instrucciones</h2>
-              <p className="font-body-lg text-body-lg text-on-surface-variant">Sigue los pasos en orden para preparar tus tandas de sopa de la semana.</p>
-              <p className="font-body-md text-body-md text-on-surface-variant mt-2">Las cantidades de la lista de compras ya están ajustadas a las tandas elegidas.</p>
+              <p className="font-body-lg text-body-lg text-on-surface-variant">Sigue los pasos originales de cada receta.</p>
+              <p className="font-body-md text-body-md text-on-surface-variant mt-2">Las cantidades de la lista de compras ya están ajustadas según las tandas y platos elegidos.</p>
             </div>
 
             {uniqueCaldosBase.length > 0 && (

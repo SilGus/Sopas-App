@@ -142,7 +142,11 @@ const snapQuantity = (value: number) => {
 };
 
 const pluralizeUnit = (unit: string, quantity: number) => {
-  if (quantity < 1 || quantity === 1 || unit === 'un' || unit === 'g' || unit === 'kg' || unit === 'ml' || unit === 'cda' || unit === 'cdita') {
+  if (unit === 'un') {
+    return quantity === 1 ? 'unidad' : 'unidades';
+  }
+
+  if (quantity < 1 || quantity === 1 || unit === 'g' || unit === 'kg' || unit === 'ml' || unit === 'cda' || unit === 'cdita') {
     return unit;
   }
 
@@ -178,6 +182,9 @@ const formatNumberForDisplay = (value: number) => {
   const snapped = snapQuantity(value);
   return formatQuantityText(snapped);
 };
+
+export const formatYieldText = (porciones: string) =>
+  /\bporciones?\b/i.test(porciones) ? porciones : `${porciones} porciones`;
 
 const toGroupedIngredients = (groups: Record<string, Record<string, GroupedIngredient>>): GroupedIngredients =>
   Object.fromEntries(
@@ -265,28 +272,59 @@ export function getGroupedIngredients(cart: CartItem[]): ShoppingListData {
   };
 }
 
-export function generateWhatsAppMessage(data: ShoppingListData): string {
+const formatAgregadosSummary = (item: CartItem, sopa?: Sopa) => {
+  const agregados = getAgregadosSeleccionados(item, sopa);
+  if (agregados.length === 0) {
+    return "Sin agregados familiares";
+  }
+
+  return agregados
+    .map(agregadoSeleccionado => {
+      const agregado = AGREGADOS_FAMILIARES.find(a => a.id === agregadoSeleccionado.agregadoId);
+      const platosLabel = agregadoSeleccionado.platosAgregado === 1 ? 'plato' : 'platos';
+      return `${agregado?.nombre ?? 'Agregado'} para ${formatNumberForDisplay(agregadoSeleccionado.platosAgregado)} ${platosLabel}`;
+    })
+    .join(", ");
+};
+
+const appendMenuSummary = (cart: CartItem[]) => {
+  if (cart.length === 0) {
+    return "";
+  }
+
+  let text = "*Resumen del menú elegido*\n";
+  cart.forEach((item, index) => {
+    const sopa = SOPAS.find(s => s.id === item.sopaId);
+    const caldoSeleccionado = CALDOS_BASE.find(c => c.id === item.caldoBaseId);
+    const caldoRecomendado = sopa ? CALDOS_BASE.find(c => c.id === sopa.caldo_base_sugerido_id) : undefined;
+    const tandasSopa = getTandasSopa(item, sopa);
+    const tandasCaldo = getTandasCaldo(item);
+    const reemplazaRecomendado = !!caldoRecomendado && !!caldoSeleccionado && caldoRecomendado.id !== caldoSeleccionado.id;
+
+    text += `\n*Sopa ${index + 1}:* ${sopa?.nombre ?? 'Sopa seleccionada'}\n`;
+    if (sopa) {
+      text += `- Categoría: ${sopa.categoria_sopa}\n`;
+      text += `- Rinde según ebook: ${formatYieldText(sopa.porciones)} por tanda\n`;
+      text += `- Vas a preparar: ${formatTandasLabel(tandasSopa)} = ${formatYieldText(formatEstimatedYield(sopa.porciones, tandasSopa))} estimadas\n`;
+    }
+    text += `- Caldo recomendado: ${caldoRecomendado?.nombre ?? 'No indicado'}\n`;
+    text += `- Caldo seleccionado: ${caldoSeleccionado?.nombre ?? 'No indicado'}\n`;
+    if (reemplazaRecomendado && caldoRecomendado) {
+      text += `- Reemplaza el recomendado: ${caldoRecomendado.nombre}\n`;
+    }
+    const tandaCompletaLabel = tandasCaldo === 1 ? 'completa' : 'completas';
+    text += item.includeCaldoIngredients === false
+      ? `- Estado del caldo: ya preparado\n`
+      : `- Estado del caldo: a preparar (${formatTandasLabel(tandasCaldo)} ${tandaCompletaLabel})\n`;
+    text += `- Agregados: ${formatAgregadosSummary(item, sopa)}\n`;
+  });
+
+  return `${text}\n`;
+};
+
+export function generateWhatsAppMessage(data: ShoppingListData, cart: CartItem[] = []): string {
   let text = "*Mi Lista de Compras - Sopas que Deshinchan*\n\n";
-  for (const [category, items] of Object.entries(data.ingredientes)) {
-    text += `*${category}*\n`;
-    for (const item of items) {
-      const qtyStr = formatQuantityText(item.cantidad);
-      const unitLabel = pluralizeUnit(item.unidad, item.cantidad);
-      text += `- ${qtyStr} ${unitLabel} de ${item.nombre}\n`;
-    }
-    text += "\n";
-  }
-  if (Object.keys(data.agregadosFamiliares).length > 0) {
-    text += `*Agregados familiares*\n`;
-    for (const items of Object.values(data.agregadosFamiliares)) {
-      for (const item of items) {
-        const qtyStr = formatQuantityText(item.cantidad);
-        const unitLabel = pluralizeUnit(item.unidad, item.cantidad);
-        text += `- ${qtyStr} ${unitLabel} de ${item.nombre}\n`;
-      }
-    }
-    text += "\n";
-  }
+  text += appendMenuSummary(cart);
   if (Object.keys(data.caldoNecesario).length > 0) {
     text += `*Caldo necesario para esta sopa*\n`;
     for (const [category, items] of Object.entries(data.caldoNecesario)) {
@@ -298,10 +336,33 @@ export function generateWhatsAppMessage(data: ShoppingListData): string {
       if (category) text += "\n";
     }
   }
+  if (Object.keys(data.ingredientes).length > 0) {
+    text += `*Ingredientes de la sopa*\n`;
+    for (const [category, items] of Object.entries(data.ingredientes)) {
+      text += `_${category}_\n`;
+      for (const item of items) {
+        const qtyStr = formatQuantityText(item.cantidad);
+        const unitLabel = pluralizeUnit(item.unidad, item.cantidad);
+        text += `- ${qtyStr} ${unitLabel} de ${item.nombre}\n`;
+      }
+      text += "\n";
+    }
+  }
   for (const [caldoNombre, sections] of Object.entries(data.tandasCaldoBase)) {
     text += `*Para preparar tandas completas de caldo base: ${caldoNombre}*\n`;
     for (const [category, items] of Object.entries(sections)) {
       text += `_${category}_\n`;
+      for (const item of items) {
+        const qtyStr = formatQuantityText(item.cantidad);
+        const unitLabel = pluralizeUnit(item.unidad, item.cantidad);
+        text += `- ${qtyStr} ${unitLabel} de ${item.nombre}\n`;
+      }
+    }
+    text += "\n";
+  }
+  if (Object.keys(data.agregadosFamiliares).length > 0) {
+    text += `*Agregados familiares*\n`;
+    for (const items of Object.values(data.agregadosFamiliares)) {
       for (const item of items) {
         const qtyStr = formatQuantityText(item.cantidad);
         const unitLabel = pluralizeUnit(item.unidad, item.cantidad);
