@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Inicio, Catalogo, CaldoRecomendado, OtrosCaldosBase, TandasSopa, AgregadosOpcionales, Bucle, ListaCompras, ModoCocina, Historial } from './screens';
 import { SOPAS } from './data';
-import { CartItem, SavedList } from './types';
+import { AgregadoSeleccionado, CartItem, SavedList } from './types';
 
 type ScreenState = 'inicio' | 'catalogo' | 'caldoRecomendado' | 'otrosCaldos' | 'tandas' | 'agregados' | 'bucle' | 'lista' | 'cocina' | 'historial';
 
@@ -46,7 +46,7 @@ export default function App() {
 
   const handleSelectSoup = (id: number) => {
     const sopa = SOPAS.find(s => s.id === id);
-    setSelection({ sopaId: id, caldoBaseId: sopa?.caldo_base_sugerido_id, porcionesBase: sopa?.porcionesBase, agregadoIds: [], includeCaldoIngredients: true, tandasCaldo: 1 });
+    setSelection({ sopaId: id, caldoBaseId: sopa?.caldo_base_sugerido_id, porcionesBase: sopa?.porcionesBase, agregadoIds: [], agregadosSeleccionados: [], includeCaldoIngredients: true, tandasCaldo: 1 });
     setCurrentScreen('caldoRecomendado');
   };
 
@@ -64,8 +64,9 @@ export default function App() {
     setCurrentScreen('agregados');
   };
 
-  const handleConfirmAgregados = (agregadoIds: number[]) => {
+  const handleConfirmAgregados = (agregadosSeleccionados: AgregadoSeleccionado[]) => {
     const sopa = SOPAS.find(s => s.id === selection.sopaId!);
+    const agregadoIds = agregadosSeleccionados.map(agregado => agregado.agregadoId);
     setCart(prev => [
       ...prev,
         {
@@ -73,6 +74,7 @@ export default function App() {
           sopaId: selection.sopaId!,
           caldoBaseId: selection.caldoBaseId!,
           agregadoIds,
+          agregadosSeleccionados,
           tandasSopa: selection.tandasSopa,
           tandasCaldo: selection.includeCaldoIngredients !== false ? selection.tandasCaldo : undefined,
           porcionesBase: selection.porcionesBase ?? sopa?.porcionesBase,
@@ -159,6 +161,7 @@ export default function App() {
       {currentScreen === 'agregados' && (
         <AgregadosOpcionales
           initialAgregadoIds={selection.agregadoIds}
+          initialAgregadosSeleccionados={selection.agregadosSeleccionados}
           onConfirm={handleConfirmAgregados}
           onBack={() => setCurrentScreen('tandas')}
         />

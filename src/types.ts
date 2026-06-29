@@ -47,11 +47,17 @@ export interface AgregadoFamiliar {
   ingredientes: Ingrediente[];
 }
 
+export interface AgregadoSeleccionado {
+  agregadoId: number;
+  platosAgregado: number;
+}
+
 export interface CartItem {
   id: string;
   sopaId: number;
   caldoBaseId: number;
   agregadoIds: number[];
+  agregadosSeleccionados?: AgregadoSeleccionado[];
   tandasSopa?: number;
   tandasCaldo?: number;
   /** Campo heredado de listas viejas: antes representaba porciones elegidas. */

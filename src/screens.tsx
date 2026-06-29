@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AGREGADOS_FAMILIARES, CALDOS_BASE, CATEGORIAS_SOPAS, SOPAS } from './data';
-import { CartItem, SavedList } from './types';
+import { AgregadoSeleccionado, CartItem, SavedList } from './types';
 import {
   getGroupedIngredients,
   generateWhatsAppMessage,
@@ -8,6 +8,7 @@ import {
   formatBatchFactor,
   formatEstimatedYield,
   formatTandasLabel,
+  getAgregadosSeleccionados,
   getTandasCaldo,
   getTandasSopa,
 } from './utils';
@@ -335,10 +336,20 @@ export function OtrosCaldosBase({ sopaId, initialCaldoBaseId, onConfirm, onBack 
 }
 
 // Pantalla 6: Agregados familiares
-export function AgregadosOpcionales({ initialAgregadoIds = [], onConfirm, onBack }: { initialAgregadoIds?: number[]; onConfirm: (agregadoIds: number[]) => void; onBack: () => void }) {
-  const [selectedAgregados, setSelectedAgregados] = useState<number[]>(initialAgregadoIds);
+export function AgregadosOpcionales({ initialAgregadoIds = [], initialAgregadosSeleccionados, onConfirm, onBack }: { initialAgregadoIds?: number[]; initialAgregadosSeleccionados?: AgregadoSeleccionado[]; onConfirm: (agregadosSeleccionados: AgregadoSeleccionado[]) => void; onBack: () => void }) {
+  const initialSelected = initialAgregadosSeleccionados ?? initialAgregadoIds.map(agregadoId => ({ agregadoId, platosAgregado: 1 }));
+  const [selectedAgregados, setSelectedAgregados] = useState<AgregadoSeleccionado[]>(initialSelected);
   const toggleAgregado = (id: number) => {
-    setSelectedAgregados(prev => prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]);
+    setSelectedAgregados(prev => (
+      prev.some(item => item.agregadoId === id)
+        ? prev.filter(item => item.agregadoId !== id)
+        : [...prev, { agregadoId: id, platosAgregado: 1 }]
+    ));
+  };
+  const updatePlatosAgregado = (id: number, platosAgregado: number) => {
+    setSelectedAgregados(prev => prev.map(item => (
+      item.agregadoId === id ? { ...item, platosAgregado: Math.max(1, platosAgregado) } : item
+    )));
   };
 
   return (
@@ -351,29 +362,44 @@ export function AgregadosOpcionales({ initialAgregadoIds = [], onConfirm, onBack
       </header>
       <main className="px-margin-mobile pt-stack-md space-y-stack-lg max-w-xl mx-auto">
         <section className="space-y-stack-sm">
-          <h2 className="font-headline-lg text-headline-lg text-on-surface">Agregados familiares opcionales</h2>
-          <p className="font-body-md text-body-md text-on-surface-variant">Podés sumar agregados para adaptar la sopa al resto de la familia.</p>
+          <h2 className="font-headline-lg text-headline-lg text-on-surface">¿Querés sumar agregados familiares?</h2>
+          <p className="font-body-md text-body-md text-on-surface-variant">Podés usarlos para adaptar la misma sopa a distintos platos sin cocinar doble.</p>
           <div className="space-y-stack-sm">
             {AGREGADOS_FAMILIARES.map(agregado => {
-              const isSelected = selectedAgregados.includes(agregado.id);
+              const selected = selectedAgregados.find(item => item.agregadoId === agregado.id);
+              const isSelected = !!selected;
               return (
-                <label key={agregado.id} className={`bg-surface-container-low rounded-xl p-5 border-2 transition-all cursor-pointer flex items-start gap-4 ${isSelected ? 'border-primary-container' : 'border-transparent'}`}>
-                  <input
-                    type="checkbox"
-                    className="sr-only"
-                    checked={isSelected}
-                    onChange={() => toggleAgregado(agregado.id)}
-                  />
-                  <span className={`material-symbols-outlined mt-1 ${isSelected ? 'text-primary icon-fill' : 'text-on-surface-variant'}`}>
-                    {isSelected ? 'check_circle' : 'add_circle'}
-                  </span>
-                  <span className="flex-1">
-                    <span className="block font-label-md text-label-md text-secondary">#{agregado.numero} · {agregado.cantidadSugerida}</span>
-                    <span className="block font-headline-md text-headline-md text-on-surface">{agregado.nombre}</span>
-                    <span className="block font-body-md text-body-md text-on-surface-variant">{agregado.descripcion}</span>
-                    <span className="block font-body-md text-body-md text-on-surface-variant mt-1">{agregado.tipPractico}</span>
-                  </span>
-                </label>
+                <div key={agregado.id} className={`bg-surface-container-low rounded-xl p-5 border-2 transition-all flex items-start gap-4 ${isSelected ? 'border-primary-container' : 'border-transparent'}`}>
+                  <button onClick={() => toggleAgregado(agregado.id)} className="mt-1 active:scale-95 transition-transform" aria-label={isSelected ? `Quitar ${agregado.nombre}` : `Sumar ${agregado.nombre}`}>
+                    <span className={`material-symbols-outlined ${isSelected ? 'text-primary icon-fill' : 'text-on-surface-variant'}`}>
+                      {isSelected ? 'check_circle' : 'add_circle'}
+                    </span>
+                  </button>
+                  <div className="flex-1">
+                    <button onClick={() => toggleAgregado(agregado.id)} className="w-full text-left">
+                      <span className="block font-label-md text-label-md text-secondary">#{agregado.numero} · {agregado.cantidadSugerida}</span>
+                      <span className="block font-headline-md text-headline-md text-on-surface">{agregado.nombre}</span>
+                      <span className="block font-body-md text-body-md text-on-surface-variant">{agregado.descripcion}</span>
+                      {agregado.tipPractico && (
+                        <span className="block font-body-md text-body-md text-on-surface-variant mt-1">{agregado.tipPractico}</span>
+                      )}
+                    </button>
+                    {selected && (
+                      <div className="mt-4">
+                        <p className="font-body-md text-body-md text-on-surface-variant mb-3">¿Para cuántos platos querés usar este agregado?</p>
+                        <div className="flex items-center justify-between gap-4 bg-surface-container-lowest rounded-full p-2 border border-outline-variant shadow-sm max-w-xs">
+                          <button onClick={() => updatePlatosAgregado(agregado.id, selected.platosAgregado - 1)} className="w-10 h-10 rounded-full bg-surface flex items-center justify-center text-primary shadow hover:bg-surface-container active:scale-95 transition-all">
+                            <span className="material-symbols-outlined text-[24px]">remove</span>
+                          </button>
+                          <span className="font-display-lg text-2xl font-bold text-on-surface w-12 text-center">{selected.platosAgregado}</span>
+                          <button onClick={() => updatePlatosAgregado(agregado.id, selected.platosAgregado + 1)} className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white shadow hover:bg-primary-container active:scale-95 transition-all">
+                            <span className="material-symbols-outlined text-[24px]">add</span>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               );
             })}
           </div>
@@ -534,7 +560,7 @@ export function ListaCompras({ cart, goModoCocina, goInicio, onBottomNav, onUpda
                     {cart.map(item => {
                       const sopa = SOPAS.find(x => x.id === item.sopaId);
                       const caldoBase = CALDOS_BASE.find(x => x.id === item.caldoBaseId);
-                      const agregados = AGREGADOS_FAMILIARES.filter(x => item.agregadoIds.includes(x.id));
+                      const agregadosSeleccionados = getAgregadosSeleccionados(item, sopa);
                       const includeCaldoIngredients = item.includeCaldoIngredients !== false;
                       const tandasSopa = getTandasSopa(item, sopa);
                       const tandasCaldo = getTandasCaldo(item);
@@ -579,9 +605,12 @@ export function ListaCompras({ cart, goModoCocina, goInicio, onBottomNav, onUpda
                               <span className="pl-3.5 text-body-md">
                                 Ingredientes de sopa: {formatBatchFactor(tandasSopa)}
                               </span>
-                              {agregados.length > 0 && (
+                              {agregadosSeleccionados.length > 0 && (
                                 <span className="pl-3.5 text-body-md">
-                                  Agregados: {agregados.map(a => a.nombre).join(', ')}
+                                  Agregados: {agregadosSeleccionados.map(agregadoSeleccionado => {
+                                    const agregado = AGREGADOS_FAMILIARES.find(a => a.id === agregadoSeleccionado.agregadoId);
+                                    return `${agregado?.nombre ?? 'Agregado'} para ${agregadoSeleccionado.platosAgregado} ${agregadoSeleccionado.platosAgregado === 1 ? 'plato' : 'platos'}`;
+                                  }).join(', ')}
                                 </span>
                               )}
                             </div>
@@ -673,6 +702,36 @@ export function ListaCompras({ cart, goModoCocina, goInicio, onBottomNav, onUpda
           </section>
         ))}
 
+        {Object.keys(groups.agregadosFamiliares).length > 0 && (
+          <section className="space-y-stack-md">
+            <div className="flex items-center gap-3 border-b border-surface-variant pb-2">
+              <span className="material-symbols-outlined text-secondary icon-fill">add_circle</span>
+              <h3 className="font-headline-lg text-headline-lg text-on-surface">Agregados familiares</h3>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {Object.entries(groups.agregadosFamiliares).map(([catName, items]) => (
+                items.map(data => (
+                  <label key={`${catName}-${data.nombre}-${data.unidad}`} className="glass-card rounded-xl p-4 flex items-center gap-4 cursor-pointer active:scale-[0.98] transition-transform has-[:checked]:bg-surface-container-low has-[:checked]:opacity-50">
+                    <input className="checkbox-custom sr-only peer" type="checkbox" />
+                    <div className="w-8 h-8 rounded border-2 border-outline flex items-center justify-center transition-colors duration-200 shrink-0 bg-surface-container-lowest peer-checked:bg-primary peer-checked:border-primary">
+                      <span className="material-symbols-outlined text-on-primary text-[20px] opacity-0 scale-50 transition-all duration-200 peer-checked:opacity-100 peer-checked:scale-100 icon-fill">check</span>
+                    </div>
+                    <div className="flex-1 flex items-start gap-4 peer-checked:line-through">
+                      <span className="font-label-lg text-primary text-left whitespace-nowrap w-20 shrink-0">
+                        {formatearMedida(data.cantidad, data.unidad)}
+                      </span>
+                      <span className="font-body-lg text-on-surface text-left break-words flex-1 leading-tight mt-[1px]">
+                        {data.nombre}
+                      </span>
+                    </div>
+                  </label>
+                ))
+              ))}
+            </div>
+          </section>
+        )}
+
         {Object.keys(groups.tandasCaldoBase).length > 0 && (
           <section className="space-y-stack-md">
             <div className="flex items-center gap-3 border-b border-surface-variant pb-2">
@@ -733,7 +792,21 @@ export function ListaCompras({ cart, goModoCocina, goInicio, onBottomNav, onUpda
 export function ModoCocina({ cart, onBack, onFinishClear, onBottomNav, onGoCatalogo, onGoHistorial }: { cart: CartItem[]; onBack: () => void; onFinishClear: () => void; onBottomNav: (s: string) => void; onGoCatalogo: () => void; onGoHistorial: () => void }) {
   const uniqueCaldosBase = Array.from(new Set(cart.filter(i => i.includeCaldoIngredients !== false).map(i => i.caldoBaseId))).map(id => CALDOS_BASE.find(c => c.id === id)!);
   const uniqueSopas = Array.from(new Set(cart.map(i => i.sopaId))).map(id => SOPAS.find(s => s.id === id)!);
-  const uniqueAgregados = Array.from(new Set(cart.flatMap(i => i.agregadoIds))).map(id => AGREGADOS_FAMILIARES.find(a => a.id === id)!);
+  const agregadosPorId = cart
+    .flatMap(item => {
+      const sopa = SOPAS.find(s => s.id === item.sopaId);
+      return getAgregadosSeleccionados(item, sopa);
+    })
+    .reduce((acc, item) => {
+      acc.set(item.agregadoId, (acc.get(item.agregadoId) ?? 0) + item.platosAgregado);
+      return acc;
+    }, new Map<number, number>());
+  const agregadosPreparacion = Array.from(agregadosPorId.entries())
+    .map(([agregadoId, platosAgregado]) => ({
+      agregado: AGREGADOS_FAMILIARES.find(a => a.id === agregadoId),
+      platosAgregado,
+    }))
+    .filter((item): item is { agregado: NonNullable<typeof item.agregado>; platosAgregado: number } => !!item.agregado);
 
   const isEmpty = cart.length === 0;
 
@@ -840,7 +913,7 @@ export function ModoCocina({ cart, onBack, onFinishClear, onBottomNav, onGoCatal
               ))}
             </section>
 
-            {uniqueAgregados.length > 0 && (
+            {agregadosPreparacion.length > 0 && (
               <section className="mt-stack-lg">
                 <div className="flex items-center gap-4 mb-stack-md">
                   <div className="w-12 h-12 rounded-full bg-tertiary text-on-tertiary flex items-center justify-center shadow-sm shrink-0">
@@ -849,11 +922,12 @@ export function ModoCocina({ cart, onBack, onFinishClear, onBottomNav, onGoCatal
                   <h3 className="font-headline-lg text-headline-lg text-on-background">{uniqueCaldosBase.length > 0 ? '3' : '2'}. Agregados familiares opcionales</h3>
                 </div>
                 <div className="space-y-4">
-                  {uniqueAgregados.map(agregado => (
+                  {agregadosPreparacion.map(({ agregado, platosAgregado }) => (
                     <div key={agregado.id} className="p-6 rounded-xl border border-outline-variant shadow-sm bg-surface-container-low">
                       <span className="font-label-md text-label-md text-secondary">#{agregado.numero} · {agregado.cantidadSugerida}</span>
                       <h4 className="font-label-lg text-label-lg mb-1">{agregado.nombre}</h4>
-                      <p className="font-body-lg text-body-lg text-on-background">{agregado.descripcion}</p>
+                      <p className="font-body-lg text-body-lg text-on-background">Agregar directo en el plato para {platosAgregado} {platosAgregado === 1 ? 'plato' : 'platos'}.</p>
+                      <p className="font-body-lg text-body-lg text-on-background mt-2">{agregado.descripcion}</p>
                       <p className="font-body-lg text-body-lg text-on-background mt-2">{agregado.tipPractico}</p>
                     </div>
                   ))}

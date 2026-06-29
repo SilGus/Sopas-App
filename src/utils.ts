@@ -1,4 +1,4 @@
-import { CartItem, Sopa } from './types';
+import { AgregadoSeleccionado, CartItem, Sopa } from './types';
 import { AGREGADOS_FAMILIARES, CALDOS_BASE, SOPAS } from './data';
 
 export interface GroupedIngredient {
@@ -11,6 +11,7 @@ export type GroupedIngredients = Record<string, GroupedIngredient[]>;
 
 export interface ShoppingListData {
   ingredientes: GroupedIngredients;
+  agregadosFamiliares: GroupedIngredients;
   caldoNecesario: GroupedIngredients;
   tandasCaldoBase: Record<string, GroupedIngredients>;
 }
@@ -104,6 +105,20 @@ export const getTandasCaldo = (item: CartItem): number => {
   return getPositiveNumber(item.tandasCaldo);
 };
 
+export const getAgregadosSeleccionados = (item: CartItem, sopa?: Sopa): AgregadoSeleccionado[] => {
+  if (Array.isArray(item.agregadosSeleccionados)) {
+    return item.agregadosSeleccionados
+      .filter(agregado => Number.isFinite(agregado.agregadoId) && Number.isFinite(agregado.platosAgregado) && agregado.platosAgregado > 0)
+      .map(agregado => ({
+        agregadoId: agregado.agregadoId,
+        platosAgregado: Math.max(1, agregado.platosAgregado),
+      }));
+  }
+
+  const legacyPlatos = getTandasSopa(item, sopa) * getPositiveNumber(item.porcionesBase ?? sopa?.porcionesBase);
+  return (item.agregadoIds ?? []).map(agregadoId => ({ agregadoId, platosAgregado: legacyPlatos }));
+};
+
 const getRecipeFactor = (tandasSopa: number) => {
   if (!tandasSopa || tandasSopa <= 0) {
     return 1;
@@ -193,16 +208,15 @@ const addIngredient = (
 
 export function getGroupedIngredients(cart: CartItem[]): ShoppingListData {
   const ingredientsGroups: Record<string, Record<string, GroupedIngredient>> = {};
+  const agregadosGroups: Record<string, Record<string, GroupedIngredient>> = {};
   const caldoNecesarioGroups: Record<string, Record<string, GroupedIngredient>> = {};
   const batchGroups: Record<string, Record<string, Record<string, GroupedIngredient>>> = {};
 
   cart.forEach(item => {
     const sopa = SOPAS.find(s => s.id === item.sopaId);
     const caldoBase = CALDOS_BASE.find(c => c.id === item.caldoBaseId);
-    const agregados = AGREGADOS_FAMILIARES.filter(a => item.agregadoIds.includes(a.id));
     const tandasSopa = getTandasSopa(item, sopa);
     const recipeFactor = getRecipeFactor(tandasSopa);
-    const porcionesParaAgregados = tandasSopa * getPositiveNumber(item.porcionesBase ?? sopa?.porcionesBase);
     const caldoNecesario = sopa?.ingredientes.find(ing => ing.categoria === 'Preparaciones base');
 
     sopa?.ingredientes
@@ -230,15 +244,20 @@ export function getGroupedIngredients(cart: CartItem[]): ShoppingListData {
       });
     }
 
-    agregados.forEach(agregado => {
+    getAgregadosSeleccionados(item, sopa).forEach(agregadoSeleccionado => {
+      const agregado = AGREGADOS_FAMILIARES.find(a => a.id === agregadoSeleccionado.agregadoId);
+      if (!agregado) return;
+
       agregado.ingredientes.forEach(ing => {
-        addIngredient(ingredientsGroups, ing.categoria, ing.nombre, ing.cantidad_base * porcionesParaAgregados, ing.unidad);
+        const cantidadBase = Number.isFinite(ing.cantidad_base) ? ing.cantidad_base : 1;
+        addIngredient(agregadosGroups, 'Agregados familiares', agregado.nombre, cantidadBase * agregadoSeleccionado.platosAgregado, ing.unidad);
       });
     });
   });
 
   return {
     ingredientes: toGroupedIngredients(ingredientsGroups),
+    agregadosFamiliares: toGroupedIngredients(agregadosGroups),
     caldoNecesario: toGroupedIngredients(caldoNecesarioGroups),
     tandasCaldoBase: Object.fromEntries(
       Object.entries(batchGroups).map(([caldoNombre, groups]) => [caldoNombre, toGroupedIngredients(groups)])
@@ -254,6 +273,17 @@ export function generateWhatsAppMessage(data: ShoppingListData): string {
       const qtyStr = formatQuantityText(item.cantidad);
       const unitLabel = pluralizeUnit(item.unidad, item.cantidad);
       text += `- ${qtyStr} ${unitLabel} de ${item.nombre}\n`;
+    }
+    text += "\n";
+  }
+  if (Object.keys(data.agregadosFamiliares).length > 0) {
+    text += `*Agregados familiares*\n`;
+    for (const items of Object.values(data.agregadosFamiliares)) {
+      for (const item of items) {
+        const qtyStr = formatQuantityText(item.cantidad);
+        const unitLabel = pluralizeUnit(item.unidad, item.cantidad);
+        text += `- ${qtyStr} ${unitLabel} de ${item.nombre}\n`;
+      }
     }
     text += "\n";
   }
