@@ -1,4 +1,4 @@
-import { CartItem } from './types';
+import { CartItem, Sopa } from './types';
 import { AGREGADOS_FAMILIARES, CALDOS_BASE, SOPAS } from './data';
 
 export interface GroupedIngredient {
@@ -81,14 +81,27 @@ const normalizeUnit = (unit: string) => {
   return UNIT_ALIASES[cleanedUnit] ?? cleanedUnit;
 };
 
-const getPortionCount = (value?: number) => (typeof value === 'number' && Number.isFinite(value) ? value : 1);
+const getPositiveNumber = (value?: number) => (typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : 1);
 
-const getRecipeFactor = (desiredPortions: number, basePortions: number) => {
-  if (!basePortions || basePortions <= 0) {
+export const getTandasSopa = (item: CartItem, sopa?: Sopa): number => {
+  if (typeof item.tandasSopa === 'number' && Number.isFinite(item.tandasSopa) && item.tandasSopa > 0) {
+    return item.tandasSopa;
+  }
+
+  if (typeof item.porcionesDeseadas === 'number' && Number.isFinite(item.porcionesDeseadas) && item.porcionesDeseadas > 0) {
+    const basePortions = getPositiveNumber(item.porcionesBase ?? sopa?.porcionesBase);
+    return item.porcionesDeseadas / basePortions;
+  }
+
+  return getPositiveNumber(item.cantidad);
+};
+
+const getRecipeFactor = (tandasSopa: number) => {
+  if (!tandasSopa || tandasSopa <= 0) {
     return 1;
   }
 
-  return desiredPortions / basePortions;
+  return tandasSopa;
 };
 
 const getCaldoBatchMultiplier = (porciones: string) => {
@@ -138,6 +151,11 @@ const formatQuantityText = (value: number) => {
   return value.toFixed(2).replace(/\.?0+$/, '');
 };
 
+const formatNumberForDisplay = (value: number) => {
+  const snapped = snapQuantity(value);
+  return formatQuantityText(snapped);
+};
+
 const toGroupedIngredients = (groups: Record<string, Record<string, GroupedIngredient>>): GroupedIngredients =>
   Object.fromEntries(
     Object.entries(groups).map(([categoria, items]) => [categoria, Object.values(items)])
@@ -175,9 +193,9 @@ export function getGroupedIngredients(cart: CartItem[]): ShoppingListData {
     const sopa = SOPAS.find(s => s.id === item.sopaId);
     const caldoBase = CALDOS_BASE.find(c => c.id === item.caldoBaseId);
     const agregados = AGREGADOS_FAMILIARES.filter(a => item.agregadoIds.includes(a.id));
-    const desiredPortions = getPortionCount(item.porcionesDeseadas ?? item.cantidad);
-    const basePortions = getPortionCount(item.porcionesBase ?? sopa?.porcionesBase);
-    const recipeFactor = getRecipeFactor(desiredPortions, basePortions);
+    const tandasSopa = getTandasSopa(item, sopa);
+    const recipeFactor = getRecipeFactor(tandasSopa);
+    const porcionesParaAgregados = tandasSopa * getPositiveNumber(item.porcionesBase ?? sopa?.porcionesBase);
     const caldoNecesario = sopa?.ingredientes.find(ing => ing.categoria === 'Preparaciones base');
 
     sopa?.ingredientes
@@ -207,7 +225,7 @@ export function getGroupedIngredients(cart: CartItem[]): ShoppingListData {
 
     agregados.forEach(agregado => {
       agregado.ingredientes.forEach(ing => {
-        addIngredient(ingredientsGroups, ing.categoria, ing.nombre, ing.cantidad_base * desiredPortions, ing.unidad);
+        addIngredient(ingredientsGroups, ing.categoria, ing.nombre, ing.cantidad_base * porcionesParaAgregados, ing.unidad);
       });
     });
   });
@@ -279,12 +297,38 @@ export const formatearMedida = (valor: number, unidad: string): string => {
   return `${fraccion} ${pluralizeUnit(unidad, valor)}`;
 };
 
-export const formatPortionFactor = (desiredPortions: number, basePortions: number): string => {
-  if (!basePortions || basePortions <= 0) {
+export const formatBatchFactor = (tandasSopa: number): string => {
+  if (!tandasSopa || tandasSopa <= 0) {
     return 'x1';
   }
 
-  const factor = desiredPortions / basePortions;
-  const factorStr = Number.isInteger(factor) ? factor.toString() : factor.toFixed(2).replace(/\.?0+$/, '');
-  return `x${factorStr}`;
+  return `x${formatNumberForDisplay(tandasSopa)}`;
+};
+
+export const formatTandasLabel = (tandasSopa: number): string => {
+  const label = formatNumberForDisplay(tandasSopa);
+  return `${label} ${tandasSopa === 1 ? 'tanda' : 'tandas'}`;
+};
+
+export const formatEstimatedYield = (porciones: string, tandasSopa: number): string => {
+  const match = porciones.match(/^(\s*)(\d+(?:[.,]\d+)?)(?:(\s*(?:a|-)\s*)(\d+(?:[.,]\d+)?))?/i);
+
+  if (!match) {
+    return porciones;
+  }
+
+  const [, prefix, firstRaw, separator = '', secondRaw] = match;
+  const first = Number(firstRaw.replace(',', '.'));
+  const second = secondRaw ? Number(secondRaw.replace(',', '.')) : undefined;
+  const suffix = porciones.slice(match[0].length);
+
+  if (!Number.isFinite(first)) {
+    return porciones;
+  }
+
+  if (second !== undefined && Number.isFinite(second)) {
+    return `${prefix}${formatNumberForDisplay(first * tandasSopa)}${separator}${formatNumberForDisplay(second * tandasSopa)}${suffix}`;
+  }
+
+  return `${prefix}${formatNumberForDisplay(first * tandasSopa)}${suffix}`;
 };

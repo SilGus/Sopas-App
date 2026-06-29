@@ -1,9 +1,20 @@
 import React, { useState } from 'react';
 import { AGREGADOS_FAMILIARES, CALDOS_BASE, CATEGORIAS_SOPAS, SOPAS } from './data';
 import { CartItem, SavedList } from './types';
-import { getGroupedIngredients, generateWhatsAppMessage, formatearMedida, formatPortionFactor } from './utils';
+import {
+  getGroupedIngredients,
+  generateWhatsAppMessage,
+  formatearMedida,
+  formatBatchFactor,
+  formatEstimatedYield,
+  formatTandasLabel,
+  getTandasSopa,
+} from './utils';
 
 // --- Components ---
+
+const formatYieldText = (porciones: string) =>
+  /\bporciones?\b/i.test(porciones) ? porciones : `${porciones} porciones`;
 
 function BottomNav({ active, onNavigate }: { active: string; onNavigate: (s: string) => void }) {
   const items = [
@@ -328,24 +339,26 @@ export function CaldoBaseScreen({ sopaId, initialCaldoBaseId, initialAgregadoIds
   );
 }
 
-// Pantalla 3: Porciones
-export function Porciones({ sopaId, caldoBaseId, includeCaldoIngredients = true, onConfirm, onBack }: { sopaId: number; caldoBaseId: number; includeCaldoIngredients?: boolean; onConfirm: (qty: number) => void; onBack: () => void }) {
+// Pantalla 3: Tandas de receta
+export function TandasSopa({ sopaId, caldoBaseId, includeCaldoIngredients = true, onConfirm, onBack }: { sopaId: number; caldoBaseId: number; includeCaldoIngredients?: boolean; onConfirm: (qty: number) => void; onBack: () => void }) {
   const [qty, setQty] = useState(1);
   const sopa = SOPAS.find(s => s.id === sopaId)!;
   const caldoBase = CALDOS_BASE.find(c => c.id === caldoBaseId)!;
+  const tandasLabel = formatTandasLabel(qty);
+  const estimatedYield = formatEstimatedYield(sopa.porciones, qty);
 
   return (
     <div className="min-h-screen flex flex-col bg-background pb-32">
       <header className="bg-surface-bright shadow-sm flex items-center gap-4 w-full px-gutter-mobile h-16 sticky top-0 z-50">
         <button onClick={onBack} className="material-symbols-outlined text-primary active:scale-95 duration-150">arrow_back</button>
-        <h1 className="font-display-lg-mobile text-display-lg-mobile text-primary">Porciones</h1>
+        <h1 className="font-display-lg-mobile text-display-lg-mobile text-primary">Tandas</h1>
       </header>
 
       <main className="flex-grow flex flex-col items-center justify-center px-margin-mobile max-w-md mx-auto w-full text-center">
         <h2 className="font-display-lg-mobile text-display-lg-mobile text-on-background mb-2">{sopa.nombre}</h2>
-        <p className="font-body-md text-body-md text-on-surface-variant mb-2">Esta receta original rinde {sopa.porciones}.</p>
-        <p className="font-body-md text-body-md text-on-surface-variant mb-2">Vas a preparar {qty} porciones.</p>
-        <p className="font-body-md text-body-md text-on-surface-variant mb-2">Factor de ajuste: {formatPortionFactor(qty, sopa.porcionesBase)}.</p>
+        <p className="font-body-md text-body-md text-on-surface-variant mb-2">Cada tanda rinde: {formatYieldText(sopa.porciones)} según el ebook.</p>
+        <p className="font-body-md text-body-md text-on-surface-variant mb-2">Vas a preparar {tandasLabel} = {formatYieldText(estimatedYield)} estimadas.</p>
+        <p className="font-body-md text-body-md text-on-surface-variant mb-2">Factor de ajuste: {formatBatchFactor(qty)}.</p>
         <p className="font-body-md text-body-md text-on-surface-variant mb-2">Caldo base: {caldoBase.nombre}</p>
         <p className="font-body-md text-body-md text-on-surface-variant mb-2">
           {includeCaldoIngredients ? 'Se sumarán los ingredientes del caldo a la lista.' : 'Ya tenés el caldo preparado; no se sumarán sus ingredientes.'}
@@ -353,7 +366,7 @@ export function Porciones({ sopaId, caldoBaseId, includeCaldoIngredients = true,
         {sopa.notaCaldoBase && (
           <p className="font-body-md text-body-md text-on-surface-variant mb-2">{sopa.notaCaldoBase}</p>
         )}
-        <p className="font-body-lg text-body-lg text-on-surface-variant mb-12">¿Cuántas porciones quieres preparar?</p>
+        <p className="font-body-lg text-body-lg text-on-surface-variant mb-12">¿Cuántas tandas de esta receta querés preparar?</p>
 
         <div className="flex items-center justify-center gap-8 bg-surface-container-low rounded-full p-2 border border-outline-variant shadow-sm w-full">
           <button onClick={() => setQty(Math.max(1, qty - 1))} className="w-16 h-16 rounded-full bg-surface-container-lowest flex items-center justify-center text-primary shadow hover:bg-surface-container active:scale-95 transition-all">
@@ -449,8 +462,8 @@ export function ListaCompras({ cart, goModoCocina, goInicio, onBottomNav, onUpda
                       const caldoBase = CALDOS_BASE.find(x => x.id === item.caldoBaseId);
                       const agregados = AGREGADOS_FAMILIARES.filter(x => item.agregadoIds.includes(x.id));
                       const includeCaldoIngredients = item.includeCaldoIngredients !== false;
-                      const porcionesDeseadas = item.porcionesDeseadas ?? item.cantidad;
-                      const porcionesBase = item.porcionesBase ?? sopa?.porcionesBase ?? 1;
+                      const tandasSopa = getTandasSopa(item, sopa);
+                      const isLegacyPortionItem = item.tandasSopa === undefined && item.porcionesDeseadas !== undefined;
                       const caldoRecomendado = sopa ? CALDOS_BASE.find(x => x.id === sopa.caldo_base_sugerido_id) : undefined;
                       const reemplazaRecomendado = !!caldoRecomendado && !!caldoBase && caldoRecomendado.id !== caldoBase.id;
                       return (
@@ -462,8 +475,21 @@ export function ListaCompras({ cart, goModoCocina, goInicio, onBottomNav, onUpda
                                 <span className="truncate text-on-surface">{sopa?.nombre}</span>
                               </div>
                               <span className="pl-3.5 text-body-md">
-                                Receta original: {sopa?.porciones} · vas a preparar {porcionesDeseadas} porciones
+                                Cada tanda rinde: {formatYieldText(sopa?.porciones ?? '')} según el ebook
                               </span>
+                              <span className="pl-3.5 text-body-md">
+                                Vas a preparar {formatTandasLabel(tandasSopa)}
+                              </span>
+                              {sopa && (
+                                <span className="pl-3.5 text-body-md">
+                                  Resultado estimado: {formatYieldText(formatEstimatedYield(sopa.porciones, tandasSopa))}
+                                </span>
+                              )}
+                              {isLegacyPortionItem && (
+                                <span className="pl-3.5 text-body-md">
+                                  Lista anterior: se conserva el ajuste equivalente guardado
+                                </span>
+                              )}
                               <span className="pl-3.5 text-body-md">
                                 Caldo seleccionado: {caldoBase?.nombre}
                               </span>
@@ -476,7 +502,7 @@ export function ListaCompras({ cart, goModoCocina, goInicio, onBottomNav, onUpda
                                 {includeCaldoIngredients ? 'Sumar ingredientes para preparar una tanda completa' : 'Ya tengo caldo preparado'}
                               </span>
                               <span className="pl-3.5 text-body-md">
-                                Ajuste: {formatPortionFactor(porcionesDeseadas, porcionesBase)}
+                                Ingredientes de sopa: {formatBatchFactor(tandasSopa)}
                               </span>
                               {agregados.length > 0 && (
                                 <span className="pl-3.5 text-body-md">
@@ -487,11 +513,11 @@ export function ListaCompras({ cart, goModoCocina, goInicio, onBottomNav, onUpda
                           </div>
                           <div className="flex items-center justify-between mt-1">
                             <div className="flex items-center gap-4 bg-background rounded-full border border-outline-variant px-2 py-1 shadow-sm">
-                              <button onClick={() => item.cantidad > 1 ? onUpdateCart(item.id, item.cantidad - 1) : onRemoveItem(item.id)} className="w-10 h-10 flex items-center justify-center text-primary bg-surface-container-highest rounded-full active:scale-95 transition-all">
-                                <span className="material-symbols-outlined text-[24px]">{item.cantidad <= 1 ? 'delete' : 'remove'}</span>
+                              <button onClick={() => tandasSopa > 1 ? onUpdateCart(item.id, tandasSopa - 1) : onRemoveItem(item.id)} className="w-10 h-10 flex items-center justify-center text-primary bg-surface-container-highest rounded-full active:scale-95 transition-all">
+                                <span className="material-symbols-outlined text-[24px]">{tandasSopa <= 1 ? 'delete' : 'remove'}</span>
                               </button>
-                              <span className="font-display-lg text-2xl font-bold text-on-surface w-8 text-center">{item.cantidad}</span>
-                              <button onClick={() => onUpdateCart(item.id, item.cantidad + 1)} className="w-10 h-10 flex items-center justify-center text-primary bg-primary-container text-white rounded-full active:scale-95 transition-all shadow-sm">
+                              <span className="font-display-lg text-2xl font-bold text-on-surface w-12 text-center">{formatTandasLabel(tandasSopa).replace(/ tandas?$/, '')}</span>
+                              <button onClick={() => onUpdateCart(item.id, tandasSopa + 1)} className="w-10 h-10 flex items-center justify-center text-primary bg-primary-container text-white rounded-full active:scale-95 transition-all shadow-sm">
                                 <span className="material-symbols-outlined text-[24px] icon-fill">add</span>
                               </button>
                             </div>
@@ -665,8 +691,8 @@ export function ModoCocina({ cart, onBack, onFinishClear, onBottomNav, onGoCatal
             <div className="mb-stack-lg border-b-2 border-surface-variant pb-stack-md">
               <span className="inline-block px-4 py-1 bg-secondary-container text-on-secondary-container rounded-full font-label-md text-label-md mb-stack-sm">Preparación</span>
               <h2 className="font-display-lg text-display-lg text-primary mb-stack-sm">Instrucciones</h2>
-              <p className="font-body-lg text-body-lg text-on-surface-variant">Sigue los pasos en orden para preparar tus porciones de la semana.</p>
-              <p className="font-body-md text-body-md text-on-surface-variant mt-2">Las cantidades de la lista de compras ya están ajustadas a las porciones elegidas.</p>
+              <p className="font-body-lg text-body-lg text-on-surface-variant">Sigue los pasos en orden para preparar tus tandas de sopa de la semana.</p>
+              <p className="font-body-md text-body-md text-on-surface-variant mt-2">Las cantidades de la lista de compras ya están ajustadas a las tandas elegidas.</p>
             </div>
 
             <section className="mb-stack-lg">
@@ -801,19 +827,26 @@ export function Historial({ lists, onOpen, onBack, onDelete, onClear }: { lists:
         ) : (
           <div className="space-y-4 flex-grow flex flex-col">
             <div className="space-y-4">
-              {lists.map(list => (
-                <div key={list.id} onClick={() => onOpen(list)} className="bg-surface-container-low rounded-xl p-5 border border-outline-variant custom-shadow cursor-pointer hover:border-primary transition-all flex items-center justify-between group">
-                  <div>
-                    <h3 className="font-headline-md text-headline-md text-on-surface">{new Date(list.date).toLocaleDateString()}</h3>
-                    <p className="font-body-md text-body-md text-on-surface-variant mt-1">{list.items.reduce((acc, curr) => acc + curr.cantidad, 0)} porciones en total</p>
+              {lists.map(list => {
+                const totalTandas = list.items.reduce((acc, curr) => {
+                  const sopa = SOPAS.find(x => x.id === curr.sopaId);
+                  return acc + getTandasSopa(curr, sopa);
+                }, 0);
+
+                return (
+                  <div key={list.id} onClick={() => onOpen(list)} className="bg-surface-container-low rounded-xl p-5 border border-outline-variant custom-shadow cursor-pointer hover:border-primary transition-all flex items-center justify-between group">
+                    <div>
+                      <h3 className="font-headline-md text-headline-md text-on-surface">{new Date(list.date).toLocaleDateString()}</h3>
+                      <p className="font-body-md text-body-md text-on-surface-variant mt-1">{formatTandasLabel(totalTandas)} en total</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <button onClick={(e) => confirmDelete(e, list.id)} className="w-[52px] h-[52px] flex items-center justify-center rounded-full text-error bg-surface hover:bg-error-container hover:text-on-error-container transition-colors active:scale-95 shadow-sm border border-transparent hover:border-error/20">
+                        <span className="material-symbols-outlined text-[28px]">delete</span>
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <button onClick={(e) => confirmDelete(e, list.id)} className="w-[52px] h-[52px] flex items-center justify-center rounded-full text-error bg-surface hover:bg-error-container hover:text-on-error-container transition-colors active:scale-95 shadow-sm border border-transparent hover:border-error/20">
-                      <span className="material-symbols-outlined text-[28px]">delete</span>
-                    </button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <div className="pt-8 mt-auto flex justify-center w-full">

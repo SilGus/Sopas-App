@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Inicio, Catalogo, CaldoBaseScreen, Porciones, Bucle, ListaCompras, ModoCocina, Historial } from './screens';
+import { Inicio, Catalogo, CaldoBaseScreen, TandasSopa, Bucle, ListaCompras, ModoCocina, Historial } from './screens';
 import { SOPAS } from './data';
 import { CartItem, SavedList } from './types';
 
-type ScreenState = 'inicio' | 'catalogo' | 'caldoBase' | 'porciones' | 'bucle' | 'lista' | 'cocina' | 'historial';
+type ScreenState = 'inicio' | 'catalogo' | 'caldoBase' | 'tandas' | 'bucle' | 'lista' | 'cocina' | 'historial';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<ScreenState>('inicio');
@@ -52,10 +52,10 @@ export default function App() {
 
   const handleSelectCaldoBase = (caldoBaseId: number, agregadoIds: number[], includeCaldoIngredients: boolean) => {
     setSelection(prev => ({ ...prev, caldoBaseId, agregadoIds, includeCaldoIngredients }));
-    setCurrentScreen('porciones');
+    setCurrentScreen('tandas');
   };
 
-  const handleAddPortions = (qty: number) => {
+  const handleAddBatches = (tandasSopa: number) => {
     const sopa = SOPAS.find(s => s.id === selection.sopaId!);
     setCart(prev => [
       ...prev,
@@ -64,10 +64,10 @@ export default function App() {
           sopaId: selection.sopaId!,
           caldoBaseId: selection.caldoBaseId!,
           agregadoIds: selection.agregadoIds ?? [],
-          porcionesDeseadas: qty,
+          tandasSopa,
           porcionesBase: selection.porcionesBase ?? sopa?.porcionesBase,
           includeCaldoIngredients: selection.includeCaldoIngredients !== false,
-          cantidad: qty
+          cantidad: tandasSopa
         }
     ]);
     setCurrentScreen('bucle');
@@ -97,7 +97,7 @@ export default function App() {
   };
 
   const handleUpdateCartItem = (id: string, newQty: number) => {
-    setCart(prev => prev.map(item => item.id === id ? { ...item, cantidad: newQty, porcionesDeseadas: newQty } : item));
+    setCart(prev => prev.map(item => item.id === id ? { ...item, cantidad: newQty, tandasSopa: newQty } : item));
   };
 
   const handleRemoveCartItem = (id: string) => {
@@ -129,12 +129,12 @@ export default function App() {
           onBack={() => setCurrentScreen('catalogo')} 
         />
       )}
-      {currentScreen === 'porciones' && (
-        <Porciones 
+      {currentScreen === 'tandas' && (
+        <TandasSopa 
           sopaId={selection.sopaId!} 
           caldoBaseId={selection.caldoBaseId!} 
           includeCaldoIngredients={selection.includeCaldoIngredients !== false}
-          onConfirm={handleAddPortions} 
+          onConfirm={handleAddBatches} 
           onBack={() => setCurrentScreen('caldoBase')} 
         />
       )}
