@@ -53,6 +53,7 @@ export interface CartItem {
   caldoBaseId: number;
   agregadoIds: number[];
   tandasSopa?: number;
+  tandasCaldo?: number;
   /** Campo heredado de listas viejas: antes representaba porciones elegidas. */
   porcionesDeseadas?: number;
   porcionesBase?: number;

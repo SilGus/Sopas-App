@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Inicio, Catalogo, CaldoBaseScreen, TandasSopa, Bucle, ListaCompras, ModoCocina, Historial } from './screens';
+import { Inicio, Catalogo, CaldoRecomendado, OtrosCaldosBase, TandasSopa, AgregadosOpcionales, Bucle, ListaCompras, ModoCocina, Historial } from './screens';
 import { SOPAS } from './data';
 import { CartItem, SavedList } from './types';
 
-type ScreenState = 'inicio' | 'catalogo' | 'caldoBase' | 'tandas' | 'bucle' | 'lista' | 'cocina' | 'historial';
+type ScreenState = 'inicio' | 'catalogo' | 'caldoRecomendado' | 'otrosCaldos' | 'tandas' | 'agregados' | 'bucle' | 'lista' | 'cocina' | 'historial';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<ScreenState>('inicio');
@@ -46,16 +46,25 @@ export default function App() {
 
   const handleSelectSoup = (id: number) => {
     const sopa = SOPAS.find(s => s.id === id);
-    setSelection({ sopaId: id, porcionesBase: sopa?.porcionesBase, agregadoIds: [], includeCaldoIngredients: true });
-    setCurrentScreen('caldoBase');
+    setSelection({ sopaId: id, caldoBaseId: sopa?.caldo_base_sugerido_id, porcionesBase: sopa?.porcionesBase, agregadoIds: [], includeCaldoIngredients: true, tandasCaldo: 1 });
+    setCurrentScreen('caldoRecomendado');
   };
 
-  const handleSelectCaldoBase = (caldoBaseId: number, agregadoIds: number[], includeCaldoIngredients: boolean) => {
-    setSelection(prev => ({ ...prev, caldoBaseId, agregadoIds, includeCaldoIngredients }));
+  const handleSelectCaldoBase = (caldoBaseId: number, includeCaldoIngredients: boolean) => {
+    setSelection(prev => ({ ...prev, caldoBaseId, includeCaldoIngredients, tandasCaldo: includeCaldoIngredients ? (prev.tandasCaldo ?? 1) : undefined }));
     setCurrentScreen('tandas');
   };
 
-  const handleAddBatches = (tandasSopa: number) => {
+  const handleChangeCaldoBase = () => {
+    setCurrentScreen('otrosCaldos');
+  };
+
+  const handleAddBatches = (tandasSopa: number, tandasCaldo?: number) => {
+    setSelection(prev => ({ ...prev, tandasSopa, tandasCaldo: prev.includeCaldoIngredients !== false ? tandasCaldo : undefined }));
+    setCurrentScreen('agregados');
+  };
+
+  const handleConfirmAgregados = (agregadoIds: number[]) => {
     const sopa = SOPAS.find(s => s.id === selection.sopaId!);
     setCart(prev => [
       ...prev,
@@ -63,11 +72,12 @@ export default function App() {
           id: crypto.randomUUID(),
           sopaId: selection.sopaId!,
           caldoBaseId: selection.caldoBaseId!,
-          agregadoIds: selection.agregadoIds ?? [],
-          tandasSopa,
+          agregadoIds,
+          tandasSopa: selection.tandasSopa,
+          tandasCaldo: selection.includeCaldoIngredients !== false ? selection.tandasCaldo : undefined,
           porcionesBase: selection.porcionesBase ?? sopa?.porcionesBase,
           includeCaldoIngredients: selection.includeCaldoIngredients !== false,
-          cantidad: tandasSopa
+          cantidad: selection.tandasSopa ?? 1
         }
     ]);
     setCurrentScreen('bucle');
@@ -119,14 +129,20 @@ export default function App() {
     <>
       {currentScreen === 'inicio' && <Inicio onNewList={startNew} onHistory={() => setCurrentScreen('historial')} onBottomNav={handleBottomNav} />}
       {currentScreen === 'catalogo' && <Catalogo onSelect={handleSelectSoup} onBottomNav={handleBottomNav} />}
-      {currentScreen === 'caldoBase' && (
-        <CaldoBaseScreen
+      {currentScreen === 'caldoRecomendado' && (
+        <CaldoRecomendado
           sopaId={selection.sopaId!} 
-          initialCaldoBaseId={selection.caldoBaseId}
-          initialAgregadoIds={selection.agregadoIds}
-          initialIncludeCaldoIngredients={selection.includeCaldoIngredients !== false}
           onConfirm={handleSelectCaldoBase} 
+          onChangeCaldo={handleChangeCaldoBase}
           onBack={() => setCurrentScreen('catalogo')} 
+        />
+      )}
+      {currentScreen === 'otrosCaldos' && (
+        <OtrosCaldosBase
+          sopaId={selection.sopaId!}
+          initialCaldoBaseId={selection.caldoBaseId}
+          onConfirm={handleSelectCaldoBase}
+          onBack={() => setCurrentScreen('caldoRecomendado')}
         />
       )}
       {currentScreen === 'tandas' && (
@@ -134,8 +150,17 @@ export default function App() {
           sopaId={selection.sopaId!} 
           caldoBaseId={selection.caldoBaseId!} 
           includeCaldoIngredients={selection.includeCaldoIngredients !== false}
+          initialTandasSopa={selection.tandasSopa}
+          initialTandasCaldo={selection.tandasCaldo}
           onConfirm={handleAddBatches} 
-          onBack={() => setCurrentScreen('caldoBase')} 
+          onBack={() => setCurrentScreen(selection.caldoBaseId === SOPAS.find(s => s.id === selection.sopaId)?.caldo_base_sugerido_id ? 'caldoRecomendado' : 'otrosCaldos')} 
+        />
+      )}
+      {currentScreen === 'agregados' && (
+        <AgregadosOpcionales
+          initialAgregadoIds={selection.agregadoIds}
+          onConfirm={handleConfirmAgregados}
+          onBack={() => setCurrentScreen('tandas')}
         />
       )}
       {currentScreen === 'bucle' && (

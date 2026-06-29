@@ -96,6 +96,14 @@ export const getTandasSopa = (item: CartItem, sopa?: Sopa): number => {
   return getPositiveNumber(item.cantidad);
 };
 
+export const getTandasCaldo = (item: CartItem): number => {
+  if (item.includeCaldoIngredients === false) {
+    return 0;
+  }
+
+  return getPositiveNumber(item.tandasCaldo);
+};
+
 const getRecipeFactor = (tandasSopa: number) => {
   if (!tandasSopa || tandasSopa <= 0) {
     return 1;
@@ -187,7 +195,6 @@ export function getGroupedIngredients(cart: CartItem[]): ShoppingListData {
   const ingredientsGroups: Record<string, Record<string, GroupedIngredient>> = {};
   const caldoNecesarioGroups: Record<string, Record<string, GroupedIngredient>> = {};
   const batchGroups: Record<string, Record<string, Record<string, GroupedIngredient>>> = {};
-  const batchCaldosSeen = new Set<number>();
 
   cart.forEach(item => {
     const sopa = SOPAS.find(s => s.id === item.sopaId);
@@ -214,12 +221,12 @@ export function getGroupedIngredients(cart: CartItem[]): ShoppingListData {
       );
     }
 
-    if (item.includeCaldoIngredients !== false && caldoBase && !batchCaldosSeen.has(caldoBase.id)) {
-      batchCaldosSeen.add(caldoBase.id);
-      batchGroups[caldoBase.nombre] = {};
+    const tandasCaldo = getTandasCaldo(item);
+    if (tandasCaldo > 0 && caldoBase) {
+      batchGroups[caldoBase.nombre] = batchGroups[caldoBase.nombre] ?? {};
       const batchMultiplier = getCaldoBatchMultiplier(caldoBase.porciones);
       caldoBase.ingredientes.forEach(ing => {
-        addIngredient(batchGroups[caldoBase.nombre], ing.categoria, ing.nombre, snapQuantity(ing.cantidad_base * batchMultiplier), ing.unidad);
+        addIngredient(batchGroups[caldoBase.nombre], ing.categoria, ing.nombre, snapQuantity(ing.cantidad_base * batchMultiplier * tandasCaldo), ing.unidad);
       });
     }
 
@@ -262,7 +269,7 @@ export function generateWhatsAppMessage(data: ShoppingListData): string {
     }
   }
   for (const [caldoNombre, sections] of Object.entries(data.tandasCaldoBase)) {
-    text += `*Para preparar una tanda completa de caldo base: ${caldoNombre}*\n`;
+    text += `*Para preparar tandas completas de caldo base: ${caldoNombre}*\n`;
     for (const [category, items] of Object.entries(sections)) {
       text += `_${category}_\n`;
       for (const item of items) {
